@@ -92,6 +92,10 @@ export default function Calendar() {
   // ── Add event ─────────────────────────────────────────────────────────────
   const [addOpen, setAddOpen] = useState(false)
   const [addForm, setAddForm] = useState<EventForm>(blankForm())
+  const [addError, setAddError] = useState('')
+
+  const openAdd = () => { setAddForm(blankForm()); setAddError(''); setAddOpen(true) }
+  const closeAdd = () => { setAddOpen(false); setAddForm(blankForm()); setAddError('') }
 
   // ── Sync / connection ─────────────────────────────────────────────────────
   const [syncOpen, setSyncOpen]     = useState(false)
@@ -132,11 +136,15 @@ export default function Calendar() {
 
   // ── Add event ─────────────────────────────────────────────────────────────
   const handleAddEvent = () => {
-    if (!addForm.title.trim() || !addForm.date) return
+    if (!addForm.title.trim()) { setAddError('Title is required.'); return }
+    if (!addForm.date)         { setAddError('Date is required.'); return }
+    setAddError('')
     const ev = formToEvent(addForm, Date.now().toString())
     setCalEvents(prev => [...prev, ev])
-    setAddOpen(false)
-    setAddForm(blankForm())
+    // Navigate the calendar grid to the month of the new event
+    const d = new Date(addForm.date)
+    setCurrent({ year: d.getFullYear(), month: d.getMonth() })
+    closeAdd()
     pushToplatform('Created', ev.title)
   }
 
@@ -246,7 +254,7 @@ export default function Calendar() {
           <Button variant="secondary" size="sm" icon={<Link2 size={14} />} onClick={() => setSyncOpen(true)}>
             {syncStatus ? 'Manage Connection' : 'Connect Calendar'}
           </Button>
-          <Button size="sm" icon={<Plus size={14} />} onClick={() => setAddOpen(true)}>Add Event</Button>
+          <Button size="sm" icon={<Plus size={14} />} onClick={openAdd}>Add Event</Button>
         </div>
       </div>
 
@@ -445,9 +453,17 @@ export default function Calendar() {
       </Modal>
 
       {/* ── Add Event Modal ── */}
-      <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Add Event" size="lg">
+      <Modal open={addOpen} onClose={closeAdd} title="Add Event" size="lg">
         <div className="p-6 space-y-4">
-          <EventFormFields form={addForm} onChange={setAddForm} />
+          <EventFormFields
+            form={addForm}
+            onChange={f => { setAddForm(f); setAddError('') }}
+          />
+          {addError && (
+            <p className="text-xs text-red-400 flex items-center gap-1.5">
+              <AlertTriangle size={13} /> {addError}
+            </p>
+          )}
           {syncStatus && (
             <div className="flex items-center gap-2 text-xs text-slate-500 bg-slate-700/20 rounded-lg px-3 py-2">
               <RefreshCw size={11} />
@@ -455,8 +471,8 @@ export default function Calendar() {
             </div>
           )}
           <div className="flex gap-3 pt-1">
-            <Button className="flex-1" onClick={handleAddEvent}>Add Event</Button>
-            <Button variant="secondary" className="flex-1" onClick={() => setAddOpen(false)}>Cancel</Button>
+            <Button className="flex-1" onClick={handleAddEvent} icon={<Plus size={14} />}>Add Event</Button>
+            <Button variant="secondary" className="flex-1" onClick={closeAdd}>Cancel</Button>
           </div>
         </div>
       </Modal>
