@@ -7,36 +7,67 @@ import Button from '../components/ui/Button'
 import Modal from '../components/ui/Modal'
 import type { Customer } from '../types'
 
-const customers: Customer[] = [
-  { id: '1', name: 'Acme Corporation', email: 'billing@acmecorp.com', phone: '(555) 210-4400', lastVisit: '2025-06-05', totalSpend: 128400, visits: 47, status: 'active', tags: ['enterprise', 'priority'] },
-  { id: '2', name: 'Michael Torres', email: 'mtorres@email.com', phone: '(555) 382-9921', lastVisit: '2025-06-03', totalSpend: 4280, visits: 12, status: 'active', tags: ['retail'] },
-  { id: '3', name: 'Riverdale Bakery', email: 'hello@riverdalebakery.com', phone: '(555) 501-7743', lastVisit: '2025-06-01', totalSpend: 850, visits: 2, status: 'new', tags: ['new', 'local'] },
-  { id: '4', name: 'Sandra Wei', email: 'sandra.wei@gmail.com', phone: '(555) 774-0012', lastVisit: '2025-02-14', totalSpend: 2100, visits: 8, status: 'inactive', tags: ['at-risk'] },
-  { id: '5', name: 'Blue Ridge Roofing', email: 'ops@blueridgeroofing.com', phone: '(555) 630-8844', lastVisit: '2025-05-28', totalSpend: 18700, visits: 23, status: 'active', tags: ['contractor', 'priority'] },
-  { id: '6', name: 'Jamie Okafor', email: 'jamie.o@email.com', phone: '(555) 290-5518', lastVisit: '2025-05-20', totalSpend: 640, visits: 3, status: 'active', tags: ['retail'] },
-  { id: '7', name: 'TechStart LLC', email: 'ops@techstart.io', phone: '(555) 188-3300', lastVisit: '2025-01-10', totalSpend: 9200, visits: 15, status: 'inactive', tags: ['at-risk', 'tech'] },
+const INITIAL_CUSTOMERS: Customer[] = [
+  { id: '1', name: 'Acme Corporation',  email: 'billing@acmecorp.com',    phone: '(555) 210-4400', lastVisit: '2025-06-05', totalSpend: 128400, visits: 47, status: 'active',   tags: ['enterprise', 'priority'] },
+  { id: '2', name: 'Michael Torres',    email: 'mtorres@email.com',        phone: '(555) 382-9921', lastVisit: '2025-06-03', totalSpend: 4280,   visits: 12, status: 'active',   tags: ['retail'] },
+  { id: '3', name: 'Riverdale Bakery',  email: 'hello@riverdalebakery.com',phone: '(555) 501-7743', lastVisit: '2025-06-01', totalSpend: 850,    visits: 2,  status: 'new',      tags: ['new', 'local'] },
+  { id: '4', name: 'Sandra Wei',        email: 'sandra.wei@gmail.com',     phone: '(555) 774-0012', lastVisit: '2025-02-14', totalSpend: 2100,   visits: 8,  status: 'inactive', tags: ['at-risk'] },
+  { id: '5', name: 'Blue Ridge Roofing',email: 'ops@blueridgeroofing.com', phone: '(555) 630-8844', lastVisit: '2025-05-28', totalSpend: 18700,  visits: 23, status: 'active',   tags: ['contractor', 'priority'] },
+  { id: '6', name: 'Jamie Okafor',      email: 'jamie.o@email.com',        phone: '(555) 290-5518', lastVisit: '2025-05-20', totalSpend: 640,    visits: 3,  status: 'active',   tags: ['retail'] },
+  { id: '7', name: 'TechStart LLC',     email: 'ops@techstart.io',         phone: '(555) 188-3300', lastVisit: '2025-01-10', totalSpend: 9200,   visits: 15, status: 'inactive', tags: ['at-risk', 'tech'] },
 ]
+
+const ALL_TAGS = ['retail','enterprise','priority','local','contractor','at-risk','new','tech','wholesale','referral','vip']
 
 const STATUS_VARIANT: Record<string, 'success' | 'info' | 'warning' | 'default'> = {
   active: 'success', new: 'info', inactive: 'warning',
 }
 
+const blankForm = () => ({ name: '', email: '', phone: '', notes: '', status: 'new' as Customer['status'], tags: [] as string[] })
+
 export default function Customers() {
+  const [customers, setCustomers] = useState<Customer[]>(INITIAL_CUSTOMERS)
   const [search, setSearch] = useState('')
   const [addOpen, setAddOpen] = useState(false)
   const [selected, setSelected] = useState<Customer | null>(null)
-  const [form, setForm] = useState({ name: '', email: '', phone: '', notes: '' })
+  const [form, setForm] = useState(blankForm())
+  const [formError, setFormError] = useState('')
   const [syncOpen, setSyncOpen] = useState(false)
   const [syncForm, setSyncForm] = useState({ platform: 'HubSpot', apiKey: '', portalId: '' })
 
-  const active = customers.filter(c => c.status === 'active').length
-  const atRisk = customers.filter(c => c.tags.includes('at-risk')).length
+  const active       = customers.filter(c => c.status === 'active').length
+  const atRisk       = customers.filter(c => c.tags.includes('at-risk')).length
   const newThisMonth = customers.filter(c => c.status === 'new').length
 
   const filtered = customers.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
     c.email.toLowerCase().includes(search.toLowerCase())
   )
+
+  const handleAdd = () => {
+    if (!form.name.trim()) { setFormError('Name is required.'); return }
+    if (!form.email.trim()) { setFormError('Email is required.'); return }
+    setFormError('')
+    const newCustomer: Customer = {
+      id: Date.now().toString(),
+      name: form.name.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim() || undefined,
+      totalSpend: 0,
+      visits: 0,
+      status: form.status,
+      tags: form.tags,
+      lastVisit: undefined,
+    }
+    setCustomers(prev => [newCustomer, ...prev])
+    setAddOpen(false)
+    setForm(blankForm())
+  }
+
+  const toggleTag = (tag: string) => setForm(f => ({
+    ...f,
+    tags: f.tags.includes(tag) ? f.tags.filter(t => t !== tag) : [...f.tags, tag],
+  }))
 
   return (
     <div className="space-y-6">
@@ -152,21 +183,91 @@ export default function Customers() {
       </Modal>
 
       {/* Add customer modal */}
-      <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Add Customer">
+      <Modal open={addOpen} onClose={() => { setAddOpen(false); setForm(blankForm()); setFormError('') }} title="Add Customer">
         <div className="p-6 space-y-4">
-          {[{ label: 'Full Name / Business', key: 'name' }, { label: 'Email', key: 'email' }, { label: 'Phone', key: 'phone' }].map(({ label, key }) => (
+          {/* Required fields */}
+          {([
+            { label: 'Full Name / Business', key: 'name',  required: true  },
+            { label: 'Email Address',         key: 'email', required: true  },
+            { label: 'Phone Number',          key: 'phone', required: false },
+          ] as { label: string; key: keyof typeof form; required: boolean }[]).map(({ label, key, required }) => (
             <div key={key}>
-              <label className="block text-xs font-medium text-slate-400 mb-1">{label}</label>
-              <input type="text" value={form[key as keyof typeof form]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
+              <label className="block text-xs font-medium text-slate-400 mb-1">
+                {label} {required && <span className="text-red-400">*</span>}
+              </label>
+              <input
+                type={key === 'email' ? 'email' : 'text'}
+                value={form[key] as string}
+                onChange={e => { setForm(f => ({ ...f, [key]: e.target.value })); setFormError('') }}
+                className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500"
+              />
             </div>
           ))}
+
+          {/* Status */}
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Notes</label>
-            <textarea rows={3} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 resize-none" />
+            <label className="block text-xs font-medium text-slate-400 mb-1">Status</label>
+            <div className="flex gap-2">
+              {(['new','active','inactive'] as Customer['status'][]).map(s => (
+                <button
+                  key={s}
+                  onClick={() => setForm(f => ({ ...f, status: s }))}
+                  className={`flex-1 py-1.5 text-xs font-medium rounded-lg border capitalize transition-colors ${
+                    form.status === s
+                      ? s === 'active'   ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                      : s === 'new'      ? 'bg-sky-500/20 border-sky-500/40 text-sky-300'
+                      :                   'bg-amber-500/20 border-amber-500/40 text-amber-300'
+                      : 'bg-slate-700 border-slate-600 text-slate-400 hover:border-slate-500'
+                  }`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex gap-3">
-            <Button className="flex-1" onClick={() => setAddOpen(false)}>Add Customer</Button>
-            <Button variant="secondary" className="flex-1" onClick={() => setAddOpen(false)}>Cancel</Button>
+
+          {/* Tags */}
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-2">Tags <span className="text-slate-600 font-normal">(optional)</span></label>
+            <div className="flex flex-wrap gap-1.5">
+              {ALL_TAGS.map(tag => (
+                <button
+                  key={tag}
+                  onClick={() => toggleTag(tag)}
+                  className={`px-2.5 py-1 text-xs rounded-full border capitalize transition-colors ${
+                    form.tags.includes(tag)
+                      ? 'bg-sky-500/20 border-sky-500/40 text-sky-300'
+                      : 'bg-slate-700 border-slate-600 text-slate-400 hover:border-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-1">Notes <span className="text-slate-600 font-normal">(optional)</span></label>
+            <textarea
+              rows={3}
+              value={form.notes}
+              onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+              placeholder="Any relevant notes about this customer…"
+              className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-400/40 resize-none"
+            />
+          </div>
+
+          {/* Validation error */}
+          {formError && (
+            <p className="text-xs text-red-400 flex items-center gap-1.5">
+              <span>⚠</span> {formError}
+            </p>
+          )}
+
+          <div className="flex gap-3 pt-1">
+            <Button className="flex-1" icon={<UserPlus size={14} />} onClick={handleAdd}>Save Customer</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => { setAddOpen(false); setForm(blankForm()); setFormError('') }}>Cancel</Button>
           </div>
         </div>
       </Modal>
