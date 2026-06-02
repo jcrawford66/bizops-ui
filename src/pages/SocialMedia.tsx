@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Image, Send, Clock, ThumbsUp, MessageCircle, Share, Link2, CheckCircle2 } from 'lucide-react'
+import { Image, Send, Clock, ThumbsUp, MessageCircle, Share, Link2, CheckCircle2, Unlink } from 'lucide-react'
 import Card, { CardHeader, CardBody } from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
@@ -8,12 +8,73 @@ import type { SocialPost } from '../types'
 
 type Platform = 'facebook' | 'instagram' | 'tiktok' | 'linkedin'
 
-const PLATFORMS: { id: Platform; label: string; color: string; bg: string; connected: boolean }[] = [
-  { id: 'facebook',  label: 'Facebook',  color: 'text-blue-600',   bg: 'bg-blue-50 border-blue-200',   connected: true },
-  { id: 'instagram', label: 'Instagram', color: 'text-pink-600',   bg: 'bg-pink-50 border-pink-200',   connected: true },
-  { id: 'tiktok',    label: 'TikTok',    color: 'text-slate-900',  bg: 'bg-slate-50 border-slate-200', connected: false },
-  { id: 'linkedin',  label: 'LinkedIn',  color: 'text-blue-700',   bg: 'bg-sky-50 border-sky-200',     connected: false },
+type PlatformConfig = {
+  id: Platform
+  label: string
+  color: string
+  bg: string
+  helpText: string
+  tokenLabel: string
+  tokenPlaceholder: string
+  accountLabel: string
+  accountPlaceholder: string
+  docsUrl: string
+}
+
+const PLATFORM_CONFIGS: PlatformConfig[] = [
+  {
+    id: 'facebook',
+    label: 'Facebook',
+    color: 'text-blue-600',
+    bg: 'bg-blue-50 border-blue-200',
+    helpText: 'You\'ll need a Facebook Page Access Token. Go to Facebook Developers → your App → Graph API Explorer, select your page, and generate a Page Access Token with pages_manage_posts and pages_read_engagement permissions.',
+    tokenLabel: 'Page Access Token',
+    tokenPlaceholder: 'EAABsbCS...',
+    accountLabel: 'Facebook Page ID',
+    accountPlaceholder: '1234567890',
+    docsUrl: 'https://developers.facebook.com/docs/pages/access-tokens',
+  },
+  {
+    id: 'instagram',
+    label: 'Instagram',
+    color: 'text-pink-600',
+    bg: 'bg-pink-50 border-pink-200',
+    helpText: 'Instagram requires a Facebook-linked Business or Creator account. You\'ll need an Instagram User Access Token via the Facebook Graph API with instagram_basic and instagram_content_publish permissions.',
+    tokenLabel: 'Instagram Access Token',
+    tokenPlaceholder: 'IGQVJXb3...',
+    accountLabel: 'Instagram Business Account ID',
+    accountPlaceholder: '17841400...',
+    docsUrl: 'https://developers.facebook.com/docs/instagram-api',
+  },
+  {
+    id: 'tiktok',
+    label: 'TikTok',
+    color: 'text-slate-900',
+    bg: 'bg-slate-50 border-slate-200',
+    helpText: 'You\'ll need a TikTok for Business account and access to the TikTok Content Posting API. Generate an access token from the TikTok Developer Portal.',
+    tokenLabel: 'TikTok Access Token',
+    tokenPlaceholder: 'act.example...',
+    accountLabel: 'TikTok Open ID',
+    accountPlaceholder: 'Your TikTok Open ID',
+    docsUrl: 'https://developers.tiktok.com/doc/content-posting-api-get-started',
+  },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    color: 'text-blue-700',
+    bg: 'bg-sky-50 border-sky-200',
+    helpText: 'Create a LinkedIn App and request the Share on LinkedIn and Sign In with LinkedIn using OpenID Connect products. Generate a token with w_member_social permission.',
+    tokenLabel: 'LinkedIn Access Token',
+    tokenPlaceholder: 'AQV...',
+    accountLabel: 'LinkedIn Person URN',
+    accountPlaceholder: 'urn:li:person:xxxxxxxx',
+    docsUrl: 'https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api',
+  },
 ]
+
+const PLATFORM_ICONS: Record<Platform, string> = {
+  facebook: 'f', instagram: '📷', tiktok: '♪', linkedin: 'in',
+}
 
 const POST_TEMPLATES: Record<Platform, string> = {
   facebook: `📣 [Your attention-grabbing hook here]
@@ -61,8 +122,8 @@ Key takeaways:
 #Industry #Leadership #GrowthMindset #YourNiche`,
 }
 
-const PLATFORM_ICONS: Record<Platform, string> = {
-  facebook: 'f', instagram: '📷', tiktok: '♪', linkedin: 'in',
+const PLATFORM_DOT: Record<Platform, string> = {
+  facebook: 'bg-blue-500', instagram: 'bg-pink-500', tiktok: 'bg-slate-700', linkedin: 'bg-blue-700',
 }
 
 const recentPosts: SocialPost[] = [
@@ -72,26 +133,59 @@ const recentPosts: SocialPost[] = [
   { id: '4', platform: 'facebook', content: 'New blog post: 5 tips to optimize your operations...', status: 'draft' },
 ]
 
-const PLATFORM_DOT: Record<Platform, string> = {
-  facebook: 'bg-blue-500', instagram: 'bg-pink-500', tiktok: 'bg-slate-700', linkedin: 'bg-blue-700',
-}
+type ConnectionState = { token: string; accountId: string }
 
 export default function SocialMedia() {
+  // All platforms start disconnected — user must connect explicitly
+  const [connections, setConnections] = useState<Partial<Record<Platform, ConnectionState>>>({})
   const [activePlatform, setActivePlatform] = useState<Platform | null>(null)
   const [postContent, setPostContent] = useState('')
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [connectModal, setConnectModal] = useState<Platform | null>(null)
-  const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>(['facebook', 'instagram'])
+  const [disconnectConfirm, setDisconnectConfirm] = useState<Platform | null>(null)
+  const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([])
+  const [formToken, setFormToken] = useState('')
+  const [formAccountId, setFormAccountId] = useState('')
+  const [formError, setFormError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
 
+  const isConnected = (p: Platform) => !!connections[p]
+  const connectedPlatforms = PLATFORM_CONFIGS.filter(p => isConnected(p.id))
+
+  const openConnectModal = (p: Platform) => {
+    setFormToken('')
+    setFormAccountId('')
+    setFormError('')
+    setConnectModal(p)
+  }
+
   const handlePlatformClick = (p: Platform) => {
-    if (!PLATFORMS.find(pl => pl.id === p)?.connected) {
-      setConnectModal(p)
+    if (!isConnected(p)) {
+      openConnectModal(p)
       return
     }
     if (activePlatform === p) return
     setActivePlatform(p)
     setPostContent(POST_TEMPLATES[p])
+    if (!selectedPlatforms.includes(p)) setSelectedPlatforms([p])
+  }
+
+  const handleConnect = () => {
+    if (!formToken.trim()) { setFormError('Access token is required.'); return }
+    if (!formAccountId.trim()) { setFormError('Account / Page ID is required.'); return }
+    setConnections(prev => ({ ...prev, [connectModal!]: { token: formToken.trim(), accountId: formAccountId.trim() } }))
+    setConnectModal(null)
+    // Auto-open composer for the newly connected platform
+    setActivePlatform(connectModal!)
+    setPostContent(POST_TEMPLATES[connectModal!])
+    setSelectedPlatforms(prev => prev.includes(connectModal!) ? prev : [...prev, connectModal!])
+  }
+
+  const handleDisconnect = (p: Platform) => {
+    setConnections(prev => { const next = { ...prev }; delete next[p]; return next })
+    if (activePlatform === p) setActivePlatform(null)
+    setSelectedPlatforms(prev => prev.filter(x => x !== p))
+    setDisconnectConfirm(null)
   }
 
   const togglePlatformSelect = (p: Platform) => {
@@ -106,69 +200,93 @@ export default function SocialMedia() {
     reader.readAsDataURL(file)
   }
 
+  const modalConfig = connectModal ? PLATFORM_CONFIGS.find(p => p.id === connectModal)! : null
+
   return (
     <div className="space-y-6">
       <p className="text-sm text-slate-500">Connect your social accounts and create platform-optimized content</p>
 
-      {/* Platform connection cards */}
+      {/* Platform cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {PLATFORMS.map(p => (
-          <Card
-            key={p.id}
-            hover
-            onClick={() => handlePlatformClick(p.id)}
-            className={`border-2 ${activePlatform === p.id ? 'border-brand-500 ring-2 ring-brand-100' : 'border-transparent'}`}
-          >
-            <CardBody className="flex flex-col items-center gap-3 py-6">
-              <div className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center text-xl font-black ${p.bg} ${p.color}`}>
-                {PLATFORM_ICONS[p.id]}
-              </div>
-              <div className="text-center">
-                <p className="font-semibold text-slate-900 text-sm">{p.label}</p>
-                {p.connected
-                  ? <Badge variant="success"><CheckCircle2 size={10} className="inline mr-1" />Connected</Badge>
-                  : <Badge variant="default">Connect</Badge>
-                }
-              </div>
-            </CardBody>
-          </Card>
-        ))}
+        {PLATFORM_CONFIGS.map(p => {
+          const connected = isConnected(p.id)
+          return (
+            <Card
+              key={p.id}
+              hover
+              onClick={() => handlePlatformClick(p.id)}
+              className={`border-2 ${activePlatform === p.id ? 'border-brand-500 ring-2 ring-brand-100' : 'border-transparent'}`}
+            >
+              <CardBody className="flex flex-col items-center gap-3 py-6 relative">
+                {/* Disconnect button (top-right, only when connected) */}
+                {connected && (
+                  <button
+                    onClick={e => { e.stopPropagation(); setDisconnectConfirm(p.id) }}
+                    className="absolute top-3 right-3 text-slate-300 hover:text-red-400 transition-colors"
+                    title="Disconnect"
+                  >
+                    <Unlink size={13} />
+                  </button>
+                )}
+                <div className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center text-xl font-black ${p.bg} ${p.color}`}>
+                  {PLATFORM_ICONS[p.id]}
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold text-slate-900 text-sm">{p.label}</p>
+                  {connected
+                    ? <Badge variant="success"><CheckCircle2 size={10} className="inline mr-1" />Connected</Badge>
+                    : <Badge variant="default">Connect</Badge>
+                  }
+                </div>
+              </CardBody>
+            </Card>
+          )
+        })}
       </div>
 
+      {/* No connections prompt */}
+      {connectedPlatforms.length === 0 && (
+        <div className="bg-brand-50 border border-brand-100 rounded-xl p-5 text-center">
+          <p className="text-sm font-medium text-brand-700">No accounts connected yet</p>
+          <p className="text-xs text-brand-500 mt-1">Click any platform card above to connect your account and start posting.</p>
+        </div>
+      )}
+
       {/* Post composer */}
-      {activePlatform && (
+      {activePlatform && isConnected(activePlatform) && (
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className={`w-2.5 h-2.5 rounded-full ${PLATFORM_DOT[activePlatform]}`} />
                 <h3 className="font-semibold text-slate-900 text-sm">
-                  Create {PLATFORMS.find(p => p.id === activePlatform)?.label} Post
+                  Create {PLATFORM_CONFIGS.find(p => p.id === activePlatform)?.label} Post
                 </h3>
               </div>
               <p className="text-xs text-slate-500">Template pre-loaded — customize below</p>
             </div>
           </CardHeader>
           <CardBody className="space-y-4">
-            {/* Platform multi-select */}
-            <div>
-              <p className="text-xs font-medium text-slate-600 mb-2">Post to:</p>
-              <div className="flex gap-2 flex-wrap">
-                {PLATFORMS.filter(p => p.connected).map(p => (
-                  <button
-                    key={p.id}
-                    onClick={() => togglePlatformSelect(p.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                      selectedPlatforms.includes(p.id)
-                        ? 'bg-brand-500 text-white border-brand-500'
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-brand-300'
-                    }`}
-                  >
-                    {p.label}
-                  </button>
-                ))}
+            {connectedPlatforms.length > 1 && (
+              <div>
+                <p className="text-xs font-medium text-slate-600 mb-2">Post to:</p>
+                <div className="flex gap-2 flex-wrap">
+                  {connectedPlatforms.map(p => (
+                    <button
+                      key={p.id}
+                      onClick={() => togglePlatformSelect(p.id)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                        selectedPlatforms.includes(p.id)
+                          ? 'bg-brand-500 text-white border-brand-500'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-brand-300'
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <textarea
               value={postContent}
@@ -178,7 +296,6 @@ export default function SocialMedia() {
               placeholder="Your post content..."
             />
 
-            {/* Image upload */}
             <div>
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
               {imagePreview ? (
@@ -197,10 +314,7 @@ export default function SocialMedia() {
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs text-slate-500">
-                <span>{postContent.length} characters</span>
-                {/* Character limit hints per platform */}
-              </div>
+              <span className="text-xs text-slate-400">{postContent.length} characters</span>
               <div className="flex gap-2">
                 <Button variant="secondary" size="sm" icon={<Clock size={14} />}>Schedule</Button>
                 <Button size="sm" icon={<Send size={14} />}>Publish Now</Button>
@@ -247,20 +361,70 @@ export default function SocialMedia() {
       </Card>
 
       {/* Connect modal */}
-      <Modal open={connectModal !== null} onClose={() => setConnectModal(null)} title={`Connect ${connectModal ? PLATFORMS.find(p => p.id === connectModal)?.label : ''}`}>
+      {modalConfig && (
+        <Modal open={connectModal !== null} onClose={() => setConnectModal(null)} title={`Connect ${modalConfig.label}`} size="md">
+          <div className="p-6 space-y-5">
+            {/* Platform branding */}
+            <div className={`flex items-center gap-3 p-3 rounded-xl border-2 ${modalConfig.bg}`}>
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl font-black ${modalConfig.bg} ${modalConfig.color}`}>
+                {PLATFORM_ICONS[modalConfig.id]}
+              </div>
+              <div>
+                <p className={`font-bold text-sm ${modalConfig.color}`}>{modalConfig.label}</p>
+                <a href={modalConfig.docsUrl} target="_blank" rel="noreferrer" className="text-xs text-slate-500 hover:underline" onClick={e => e.stopPropagation()}>
+                  View API docs ↗
+                </a>
+              </div>
+            </div>
+
+            {/* Instructions */}
+            <div className="bg-slate-50 rounded-xl p-4 text-xs text-slate-600 leading-relaxed">
+              {modalConfig.helpText}
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{modalConfig.tokenLabel} <span className="text-red-400">*</span></label>
+              <input
+                type="password"
+                value={formToken}
+                onChange={e => { setFormToken(e.target.value); setFormError('') }}
+                placeholder={modalConfig.tokenPlaceholder}
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{modalConfig.accountLabel} <span className="text-red-400">*</span></label>
+              <input
+                type="text"
+                value={formAccountId}
+                onChange={e => { setFormAccountId(e.target.value); setFormError('') }}
+                placeholder={modalConfig.accountPlaceholder}
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400"
+              />
+            </div>
+
+            {formError && <p className="text-xs text-red-500">{formError}</p>}
+
+            <p className="text-xs text-slate-400">Your credentials are stored locally and never shared.</p>
+
+            <div className="flex gap-3">
+              <Button className="flex-1" onClick={handleConnect}>Connect {modalConfig.label}</Button>
+              <Button variant="secondary" className="flex-1" onClick={() => setConnectModal(null)}>Cancel</Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Disconnect confirm modal */}
+      <Modal open={disconnectConfirm !== null} onClose={() => setDisconnectConfirm(null)} title="Disconnect Account" size="sm">
         <div className="p-6 space-y-4">
-          <p className="text-sm text-slate-600">Connect your account to start posting and viewing analytics directly from BizOps.</p>
-          <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Access Token / API Key</label>
-            <input type="password" placeholder="Paste your access token here" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Page / Account ID</label>
-            <input type="text" placeholder="Your page or account ID" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
-          </div>
+          <p className="text-sm text-slate-600">
+            Are you sure you want to disconnect <span className="font-semibold">{disconnectConfirm ? PLATFORM_CONFIGS.find(p => p.id === disconnectConfirm)?.label : ''}</span>? Your saved credentials will be removed.
+          </p>
           <div className="flex gap-3">
-            <Button className="flex-1" onClick={() => setConnectModal(null)}>Connect Account</Button>
-            <Button variant="secondary" className="flex-1" onClick={() => setConnectModal(null)}>Cancel</Button>
+            <Button variant="danger" className="flex-1" onClick={() => handleDisconnect(disconnectConfirm!)}>Disconnect</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => setDisconnectConfirm(null)}>Cancel</Button>
           </div>
         </div>
       </Modal>
