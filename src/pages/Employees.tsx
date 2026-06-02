@@ -44,7 +44,7 @@ export default function Employees() {
   const [addOpen, setAddOpen] = useState(false)
   const [addForm, setAddForm] = useState<EditForm>(blankForm())
   const [syncOpen, setSyncOpen] = useState(false)
-  const [syncForm, setSyncForm] = useState({ platform: 'Gusto', apiKey: '', endpoint: '' })
+  const [syncForm, setSyncForm] = useState({ platform: 'Gusto', customPlatform: '', apiKey: '', endpoint: '' })
 
   const avgEfficiency = Math.round(employees.reduce((s, e) => s + e.efficiency, 0) / employees.length)
   const totalRevenue = employees.reduce((s, e) => s + e.revenue, 0)
@@ -293,10 +293,31 @@ export default function Employees() {
         <div className="p-6 space-y-4">
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Platform</label>
-            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
-              {['Gusto','BambooHR','ADP','Rippling','When I Work','Deputy','Homebase','Other'].map(p => <option key={p}>{p}</option>)}
+            <select
+              value={syncForm.platform}
+              onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value, customPlatform: '' }))}
+              className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+            >
+              {['Gusto','BambooHR','ADP','Rippling','When I Work','Deputy','Homebase','Paychex','Sage HR','HiBob','Workday','Other'].map(p => <option key={p}>{p}</option>)}
             </select>
           </div>
+
+          {syncForm.platform === 'Other' && (
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">
+                Platform Name <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                value={syncForm.customPlatform}
+                onChange={e => setSyncForm(f => ({ ...f, customPlatform: e.target.value }))}
+                placeholder="e.g. Zenefits, Paylocity, my custom HRIS…"
+                className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500"
+              />
+              <p className="text-[11px] text-slate-500 mt-1">This name will be saved and shown in your connection status.</p>
+            </div>
+          )}
+
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">API Key</label>
             <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
@@ -306,7 +327,13 @@ export default function Employees() {
             <input type="text" value={syncForm.endpoint} onChange={e => setSyncForm(f => ({ ...f, endpoint: e.target.value }))} placeholder="https://api.yourplatform.com" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
           </div>
           <div className="flex gap-3 pt-2">
-            <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>
+            <Button
+              className="flex-1"
+              disabled={syncForm.platform === 'Other' && !syncForm.customPlatform.trim()}
+              onClick={() => setSyncOpen(false)}
+            >
+              Connect & Sync
+            </Button>
             <Button variant="secondary" className="flex-1" onClick={() => setSyncOpen(false)}>Cancel</Button>
           </div>
         </div>
