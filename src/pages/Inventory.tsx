@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Package, AlertTriangle, Plus, Upload, RefreshCw, Pencil, Save, X, CheckCircle2, Zap, Webhook } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Package, AlertTriangle, Plus, Upload, RefreshCw, Pencil, Save, X, CheckCircle2, Zap, Webhook, Download, FileText } from 'lucide-react'
 import StatCard from '../components/ui/StatCard'
 import Card, { CardHeader } from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
@@ -58,6 +58,76 @@ function stockStatus(item: InventoryItem): { label: string; variant: 'error' | '
   return { label: 'In Stock', variant: 'success' }
 }
 
+// ─── CSV helpers ──────────────────────────────────────────────────────────────
+
+/** The expected CSV column headers (case-insensitive, flexible aliases) */
+const HEADER_MAP: Record<string, keyof CsvRow> = {
+  name: 'name', 'item name': 'name', 'product name': 'name', item: 'name',
+  sku: 'sku', 'sku / part #': 'sku', 'part #': 'sku', 'part number': 'sku',
+  category: 'category', type: 'category', 'item type': 'category',
+  quantity: 'quantity', qty: 'quantity', 'qty on hand': 'quantity', stock: 'quantity',
+  'reorder point': 'reorderPoint', 'reorder at': 'reorderPoint', 'min qty': 'reorderPoint', reorder: 'reorderPoint',
+  'unit cost': 'cost', cost: 'cost', 'cost price': 'cost', 'purchase price': 'cost',
+  'sale price': 'price', price: 'price', 'selling price': 'price', 'retail price': 'price',
+  supplier: 'supplier', vendor: 'supplier', 'supplier / vendor': 'supplier',
+}
+
+type CsvRow = {
+  name: string; sku: string; category: string; quantity: string
+  reorderPoint: string; cost: string; price: string; supplier: string
+}
+
+type ParsedRow = CsvRow & { _row: number; _errors: string[] }
+
+/** Parse a raw CSV string into rows, handling quoted fields and blank lines */
+function parseCsv(text: string): string[][] {
+  const lines = text.split(/\r?\n/).filter(l => l.trim())
+  return lines.map(line => {
+    const fields: string[] = []
+    let cur = '', inQuote = false
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i]
+      if (ch === '"') { inQuote = !inQuote; continue }
+      if (ch === ',' && !inQuote) { fields.push(cur.trim()); cur = ''; continue }
+      cur += ch
+    }
+    fields.push(cur.trim())
+    return fields
+  })
+}
+
+function mapCsvRows(rows: string[][]): { parsed: ParsedRow[]; unknownHeaders: string[] } {
+  if (rows.length < 2) return { parsed: [], unknownHeaders: [] }
+
+  const rawHeaders = rows[0].map(h => h.toLowerCase().replace(/[_-]/g, ' ').trim())
+  const colMap: (keyof CsvRow | null)[] = rawHeaders.map(h => HEADER_MAP[h] ?? null)
+  const unknownHeaders = rawHeaders.filter((_, i) => !colMap[i])
+
+  const parsed: ParsedRow[] = rows.slice(1).map((row, idx) => {
+    const entry: CsvRow = { name: '', sku: '', category: '', quantity: '', reorderPoint: '', cost: '', price: '', supplier: '' }
+    colMap.forEach((key, i) => { if (key && row[i] !== undefined) entry[key] = row[i] })
+    const errors: string[] = []
+    if (!entry.name.trim()) errors.push('Name is required')
+    if (entry.quantity && isNaN(Number(entry.quantity))) errors.push('Quantity must be a number')
+    if (entry.cost && isNaN(Number(entry.cost))) errors.push('Cost must be a number')
+    if (entry.price && isNaN(Number(entry.price))) errors.push('Price must be a number')
+    return { ...entry, _row: idx + 2, _errors: errors }
+  }).filter(r => r.name.trim() || r.sku.trim())
+
+  return { parsed, unknownHeaders }
+}
+
+function downloadTemplate() {
+  const header = 'Name,SKU,Category,Quantity,Reorder Point,Unit Cost,Sale Price,Supplier'
+  const example = 'Widget Pro,WP-001,Parts & Components,50,10,42.00,89.99,Acme Parts Co.'
+  const blob = new Blob([header + '\n' + example], { type: 'text/csv' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = 'bizops_inventory_template.csv'
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+
 export default function Inventory() {
   const [items, setItems] = useState<InventoryItem[]>(INITIAL_INVENTORY)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -65,6 +135,61 @@ export default function Inventory() {
   const [addOpen, setAddOpen] = useState(false)
   const [form, setForm] = useState<InvForm>(blankInvForm())
   const [search, setSearch] = useState('')
+
+  // ── CSV import state ──────────────────────────────────────────────────────
+  const csvInputRef = useRef<HTMLInputElement>(null)
+  const [csvOpen, setCsvOpen]             = useState(false)
+  const [csvRows, setCsvRows]             = useState<ParsedRow[]>([])
+  const [csvFileName, setCsvFileName]     = useState('')
+  const [csvUnknown, setCsvUnknown]       = useState<string[]>([])
+  const [csvImported, setCsvImported]     = useState(false)
+  const [csvSelected, setCsvSelected]     = useState<Set<number>>(new Set())
+
+  const handleCsvFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setCsvFileName(file.name)
+    const reader = new FileReader()
+    reader.onload = ev => {
+      const text = ev.target?.result as string
+      const rows = parseCsv(text)
+      const { parsed, unknownHeaders } = mapCsvRows(rows)
+      setCsvRows(parsed)
+      setCsvUnknown(unknownHeaders)
+      setCsvSelected(new Set(parsed.map((_, i) => i).filter(i => parsed[i]._errors.length === 0)))
+      setCsvImported(false)
+      setCsvOpen(true)
+    }
+    reader.readAsText(file)
+    // reset so same file can be re-uploaded
+    e.target.value = ''
+  }
+
+  const handleCsvImport = () => {
+    const toImport = csvRows.filter((_, i) => csvSelected.has(i))
+    const newItems: InventoryItem[] = toImport.map(r => ({
+      id: `csv-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      name:         r.name.trim(),
+      sku:          r.sku.trim() || `SKU-${Date.now()}`,
+      category:     r.category.trim() || 'Other',
+      quantity:     Math.max(0, Number(r.quantity) || 0),
+      reorderPoint: Math.max(0, Number(r.reorderPoint) || 0),
+      cost:         Math.max(0, Number(r.cost) || 0),
+      price:        Math.max(0, Number(r.price) || 0),
+      supplier:     r.supplier.trim() || undefined,
+      lastUpdated:  new Date().toISOString().slice(0, 10),
+    }))
+    setItems(prev => [...prev, ...newItems])
+    setCsvImported(true)
+    pushToPos('CSV import', `${newItems.length} items`)
+  }
+
+  const toggleCsvRow = (i: number) => setCsvSelected(prev => {
+    const next = new Set(prev)
+    next.has(i) ? next.delete(i) : next.add(i)
+    return next
+  })
+
   // ── POS sync state ────────────────────────────────────────────────────────
   const [syncOpen, setSyncOpen]       = useState(false)
   const [syncForm, setSyncForm]       = useState({ platform: 'Square', customPlatform: '', apiKey: '', locationId: '', webhookSecret: '' })
@@ -207,7 +332,8 @@ export default function Inventory() {
           )}
         </div>
         <div className="flex gap-2">
-          <Button variant="secondary" size="sm" icon={<Upload size={14} />}>Import CSV</Button>
+          <input ref={csvInputRef} type="file" accept=".csv,text/csv" className="hidden" onChange={handleCsvFile} />
+          <Button variant="secondary" size="sm" icon={<Upload size={14} />} onClick={() => csvInputRef.current?.click()}>Import CSV</Button>
           <Button variant="secondary" size="sm" icon={<RefreshCw size={14} />} onClick={() => setSyncOpen(true)}>
             {posConnection ? 'Manage POS' : 'Sync POS'}
           </Button>
@@ -451,6 +577,136 @@ export default function Inventory() {
           </div>
         </div>
       )}
+
+      {/* ── CSV Import Modal ───────────────────────────────────────────── */}
+      <Modal open={csvOpen} onClose={() => { setCsvOpen(false); setCsvImported(false) }} title="Import Inventory from CSV" size="xl">
+        <div className="p-6 space-y-4">
+          {csvImported ? (
+            /* Success screen */
+            <div className="flex flex-col items-center gap-3 py-8">
+              <div className="w-14 h-14 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                <CheckCircle2 size={28} className="text-emerald-400" />
+              </div>
+              <p className="text-white font-semibold">
+                {csvSelected.size} item{csvSelected.size !== 1 ? 's' : ''} imported successfully
+              </p>
+              <p className="text-sm text-slate-400 text-center">
+                Your inventory has been updated. Items are now visible in the register.
+              </p>
+              <Button onClick={() => { setCsvOpen(false); setCsvImported(false) }}>Close</Button>
+            </div>
+          ) : (
+            <>
+              {/* File info + download template */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-slate-300">
+                  <FileText size={16} className="text-slate-500" />
+                  <span className="font-medium">{csvFileName}</span>
+                  <span className="text-slate-500">· {csvRows.length} row{csvRows.length !== 1 ? 's' : ''} found</span>
+                </div>
+                <button onClick={downloadTemplate}
+                  className="flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 transition-colors">
+                  <Download size={13} /> Download template
+                </button>
+              </div>
+
+              {/* Unknown columns warning */}
+              {csvUnknown.length > 0 && (
+                <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/30 rounded-xl px-4 py-3">
+                  <AlertTriangle size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                  <div className="text-xs text-amber-300">
+                    <span className="font-semibold">Unrecognised columns ignored: </span>
+                    {csvUnknown.join(', ')}
+                    <span className="text-amber-500 ml-1">— check the column names match the template.</span>
+                  </div>
+                </div>
+              )}
+
+              {csvRows.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-sm text-slate-500">No valid rows found in this file.</p>
+                  <p className="text-xs text-slate-600 mt-1">Make sure the CSV has a header row and at least a Name column.</p>
+                </div>
+              ) : (
+                <>
+                  {/* Select all / deselect */}
+                  <div className="flex items-center justify-between text-xs text-slate-400">
+                    <span>{csvSelected.size} of {csvRows.length} rows selected for import</span>
+                    <div className="flex gap-3">
+                      <button onClick={() => setCsvSelected(new Set(csvRows.map((_, i) => i).filter(i => csvRows[i]._errors.length === 0)))}
+                        className="hover:text-sky-400 transition-colors">Select valid</button>
+                      <button onClick={() => setCsvSelected(new Set())}
+                        className="hover:text-slate-300 transition-colors">Deselect all</button>
+                    </div>
+                  </div>
+
+                  {/* Preview table */}
+                  <div className="overflow-auto max-h-72 rounded-xl border border-slate-700 scrollbar-thin">
+                    <table className="w-full text-xs min-w-[700px]">
+                      <thead className="sticky top-0 bg-slate-900">
+                        <tr className="border-b border-slate-700">
+                          <th className="w-8 px-3 py-2.5" />
+                          {['Name','SKU','Category','Qty','Reorder','Cost','Price','Supplier'].map(h => (
+                            <th key={h} className="text-left px-3 py-2.5 text-slate-500 font-medium uppercase tracking-wide">{h}</th>
+                          ))}
+                          <th className="px-3 py-2.5 text-slate-500 font-medium uppercase tracking-wide">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {csvRows.map((row, i) => {
+                          const hasError = row._errors.length > 0
+                          const selected = csvSelected.has(i)
+                          return (
+                            <tr
+                              key={i}
+                              onClick={() => !hasError && toggleCsvRow(i)}
+                              className={`border-b border-slate-700/50 transition-colors ${hasError ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${selected && !hasError ? 'bg-sky-500/5' : 'hover:bg-slate-700/30'}`}
+                            >
+                              <td className="px-3 py-2 text-center">
+                                <input type="checkbox" checked={selected && !hasError} disabled={hasError}
+                                  onChange={() => toggleCsvRow(i)} className="accent-sky-500" onClick={e => e.stopPropagation()} />
+                              </td>
+                              <td className="px-3 py-2 font-medium text-slate-200 max-w-[140px] truncate">{row.name || <span className="text-red-400">—</span>}</td>
+                              <td className="px-3 py-2 text-slate-400 font-mono">{row.sku || <span className="text-slate-600">auto</span>}</td>
+                              <td className="px-3 py-2 text-slate-400">{row.category || <span className="text-slate-600">Other</span>}</td>
+                              <td className="px-3 py-2 text-slate-300">{row.quantity || '0'}</td>
+                              <td className="px-3 py-2 text-slate-400">{row.reorderPoint || '0'}</td>
+                              <td className="px-3 py-2 text-slate-400">{row.cost ? `$${row.cost}` : '—'}</td>
+                              <td className="px-3 py-2 text-slate-400">{row.price ? `$${row.price}` : '—'}</td>
+                              <td className="px-3 py-2 text-slate-500 max-w-[100px] truncate">{row.supplier || '—'}</td>
+                              <td className="px-3 py-2">
+                                {hasError
+                                  ? <span className="text-red-400 flex items-center gap-1"><AlertTriangle size={11} />{row._errors[0]}</span>
+                                  : <span className="text-emerald-400 flex items-center gap-1"><CheckCircle2 size={11} />Ready</span>
+                                }
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="flex gap-3 pt-1">
+                    <Button
+                      className="flex-1"
+                      onClick={handleCsvImport}
+                      disabled={csvSelected.size === 0}
+                      icon={<Upload size={14} />}
+                    >
+                      Import {csvSelected.size} Item{csvSelected.size !== 1 ? 's' : ''}
+                    </Button>
+                    <Button variant="secondary" onClick={() => csvInputRef.current?.click()} icon={<FileText size={14} />}>
+                      Choose Different File
+                    </Button>
+                    <Button variant="secondary" onClick={() => setCsvOpen(false)}>Cancel</Button>
+                  </div>
+                </>
+              )}
+            </>
+          )}
+        </div>
+      </Modal>
 
       {/* ── Sync POS Modal ─────────────────────────────────────────────── */}
       <Modal open={syncOpen} onClose={() => { setSyncOpen(false); setConnectSuccess(false) }} title="Connect POS / Inventory Platform" size="md">
