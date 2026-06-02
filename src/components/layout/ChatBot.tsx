@@ -91,7 +91,7 @@ export default function ChatBot() {
           <button
             onClick={handleSend}
             disabled={!input.trim()}
-            className="w-7 h-7 bg-sky-500 hover:bg-sky-600 disabled:opacity-40 rounded-lg flex items-center justify-center transition-colors"
+            className="w-7 h-7 bg-accent hover:bg-accent-hover disabled:opacity-40 rounded-lg flex items-center justify-center transition-colors"
           >
             <Send size={13} className="text-white" />
           </button>

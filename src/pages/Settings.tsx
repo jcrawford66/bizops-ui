@@ -8,6 +8,7 @@ import Card, { CardHeader, CardBody } from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import Modal from '../components/ui/Modal'
 import Badge from '../components/ui/Badge'
+import { useApp } from '../context/AppContext'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Tab = 'business' | 'notifications' | 'security' | 'appearance' | 'team' | 'webhooks'
@@ -52,7 +53,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   return (
     <button
       onClick={() => onChange(!checked)}
-      className={`relative rounded-full transition-colors flex-shrink-0 ${checked ? 'bg-sky-500' : 'bg-slate-600'}`}
+      className={`relative rounded-full transition-colors flex-shrink-0 ${checked ? 'bg-accent' : 'bg-slate-600'}`}
       style={{ width: 44, height: 22 }}
     >
       <span
@@ -100,6 +101,7 @@ function CopyButton({ text }: { text: string }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function Settings() {
+  const { accentColor, setAccentColor, compactMode, setCompactMode } = useApp()
   const [tab, setTab] = useState<Tab>('business')
 
   // ── Business Profile ─────────────────────────────────────────────────────
@@ -159,9 +161,7 @@ export default function Settings() {
 
   const deleteKey = useCallback((id: string) => setApiKeys(prev => prev.filter(k => k.id !== id)), [])
 
-  // ── Appearance ───────────────────────────────────────────────────────────
-  const [accent, setAccent] = useState('#0ea5e9')
-  const [compact, setCompact] = useState(false)
+  // ── Appearance (reads/writes from global AppContext) ─────────────────────
   const [appSaved, setAppSaved] = useState(false)
   const saveApp = () => { setAppSaved(true); setTimeout(() => setAppSaved(false), 3000) }
 
@@ -416,15 +416,15 @@ export default function Settings() {
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Accent Color</p>
                   <div className="flex gap-3 flex-wrap">
                     {['#0ea5e9','#22c55e','#f59e0b','#ec4899','#a855f7','#f43f5e'].map(c => (
-                      <button key={c} onClick={() => setAccent(c)} style={{ background: c }}
-                        className={`w-9 h-9 rounded-full border-2 transition-all ${accent === c ? 'border-white scale-110 ring-2 ring-white/20' : 'border-transparent hover:scale-105'}`}
+                      <button key={c} onClick={() => setAccentColor(c)} style={{ background: c }}
+                        className={`w-9 h-9 rounded-full border-2 transition-all ${accentColor === c ? 'border-white scale-110 ring-2 ring-white/20' : 'border-transparent hover:scale-105'}`}
                       />
                     ))}
                   </div>
-                  <p className="text-xs text-slate-500 mt-2">Selected: <span className="text-slate-300 font-mono">{accent}</span></p>
+                  <p className="text-xs text-slate-500 mt-2">Selected: <span className="text-slate-300 font-mono">{accentColor}</span></p>
                 </div>
                 <FieldRow label="Compact Mode" description="Reduce spacing for denser information display">
-                  <Toggle checked={compact} onChange={setCompact} />
+                  <Toggle checked={compactMode} onChange={setCompactMode} />
                 </FieldRow>
                 <div className="flex items-center gap-3">
                   <Button icon={<Save size={14} />} onClick={saveApp}>Save Appearance</Button>

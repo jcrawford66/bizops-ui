@@ -107,7 +107,7 @@ export default function Header({ title }: { title: string }) {
           {/* Chat */}
           <button
             onClick={() => setChatOpen(!chatOpen)}
-            className={`p-2 rounded-lg transition-colors ${chatOpen ? 'bg-sky-500 text-white' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'}`}
+            className={`p-2 rounded-lg transition-colors ${chatOpen ? 'bg-accent text-white' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'}`}
           >
             <MessageSquare size={18} />
           </button>

@@ -13,6 +13,11 @@ type AppContextType = {
   sendChatMessage: (content: string) => void
   sidebarCollapsed: boolean
   setSidebarCollapsed: (v: boolean) => void
+  // Appearance
+  accentColor: string
+  setAccentColor: (hex: string) => void
+  compactMode: boolean
+  setCompactMode: (v: boolean) => void
 }
 
 const AppContext = createContext<AppContextType | null>(null)
@@ -54,6 +59,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     { id: '1', role: 'assistant', content: "Hi! I'm your BizOps AI assistant. Ask me anything about your business — customers, revenue, inventory, employees, and more.", timestamp: new Date() }
   ])
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [accentColor, setAccentColor] = useState('#0ea5e9')   // sky-500 default
+  const [compactMode, setCompactMode] = useState(false)
 
   const addAlert = useCallback((alert: Omit<Alert, 'id' | 'timestamp' | 'read'>) => {
     setAlerts(prev => [{
@@ -93,6 +100,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       alerts, addAlert, markAlertRead, clearAlerts, unreadCount,
       chatOpen, setChatOpen, chatMessages, sendChatMessage,
       sidebarCollapsed, setSidebarCollapsed,
+      accentColor, setAccentColor, compactMode, setCompactMode,
     }}>
       {children}
     </AppContext.Provider>
