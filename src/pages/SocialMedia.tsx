@@ -26,7 +26,7 @@ const PLATFORM_CONFIGS: PlatformConfig[] = [
     id: 'facebook',
     label: 'Facebook',
     color: 'text-blue-600',
-    bg: 'bg-blue-50 border-blue-200',
+    bg: 'bg-blue-500/10 border-blue-500/30',
     helpText: 'You\'ll need a Facebook Page Access Token. Go to Facebook Developers → your App → Graph API Explorer, select your page, and generate a Page Access Token with pages_manage_posts and pages_read_engagement permissions.',
     tokenLabel: 'Page Access Token',
     tokenPlaceholder: 'EAABsbCS...',
@@ -38,7 +38,7 @@ const PLATFORM_CONFIGS: PlatformConfig[] = [
     id: 'instagram',
     label: 'Instagram',
     color: 'text-pink-600',
-    bg: 'bg-pink-50 border-pink-200',
+    bg: 'bg-pink-500/10 border-pink-500/30',
     helpText: 'Instagram requires a Facebook-linked Business or Creator account. You\'ll need an Instagram User Access Token via the Facebook Graph API with instagram_basic and instagram_content_publish permissions.',
     tokenLabel: 'Instagram Access Token',
     tokenPlaceholder: 'IGQVJXb3...',
@@ -49,8 +49,8 @@ const PLATFORM_CONFIGS: PlatformConfig[] = [
   {
     id: 'tiktok',
     label: 'TikTok',
-    color: 'text-slate-900',
-    bg: 'bg-slate-50 border-slate-200',
+    color: 'text-white',
+    bg: 'bg-slate-700/30 border-slate-700',
     helpText: 'You\'ll need a TikTok for Business account and access to the TikTok Content Posting API. Generate an access token from the TikTok Developer Portal.',
     tokenLabel: 'TikTok Access Token',
     tokenPlaceholder: 'act.example...',
@@ -232,7 +232,7 @@ export default function SocialMedia() {
                   {PLATFORM_ICONS[p.id]}
                 </div>
                 <div className="text-center">
-                  <p className="font-semibold text-slate-900 text-sm">{p.label}</p>
+                  <p className="font-semibold text-white text-sm">{p.label}</p>
                   {connected
                     ? <Badge variant="success"><CheckCircle2 size={10} className="inline mr-1" />Connected</Badge>
                     : <Badge variant="default">Connect</Badge>
@@ -246,9 +246,9 @@ export default function SocialMedia() {
 
       {/* No connections prompt */}
       {connectedPlatforms.length === 0 && (
-        <div className="bg-brand-50 border border-brand-100 rounded-xl p-5 text-center">
-          <p className="text-sm font-medium text-brand-700">No accounts connected yet</p>
-          <p className="text-xs text-brand-500 mt-1">Click any platform card above to connect your account and start posting.</p>
+        <div className="bg-brand-500/10 border border-brand-500/20 rounded-xl p-5 text-center">
+          <p className="text-sm font-medium text-brand-400">No accounts connected yet</p>
+          <p className="text-xs text-brand-400 mt-1">Click any platform card above to connect your account and start posting.</p>
         </div>
       )}
 
@@ -259,7 +259,7 @@ export default function SocialMedia() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className={`w-2.5 h-2.5 rounded-full ${PLATFORM_DOT[activePlatform]}`} />
-                <h3 className="font-semibold text-slate-900 text-sm">
+                <h3 className="font-semibold text-white text-sm">
                   Create {PLATFORM_CONFIGS.find(p => p.id === activePlatform)?.label} Post
                 </h3>
               </div>
@@ -269,7 +269,7 @@ export default function SocialMedia() {
           <CardBody className="space-y-4">
             {connectedPlatforms.length > 1 && (
               <div>
-                <p className="text-xs font-medium text-slate-600 mb-2">Post to:</p>
+                <p className="text-xs font-medium text-slate-400 mb-2">Post to:</p>
                 <div className="flex gap-2 flex-wrap">
                   {connectedPlatforms.map(p => (
                     <button
@@ -278,7 +278,7 @@ export default function SocialMedia() {
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                         selectedPlatforms.includes(p.id)
                           ? 'bg-brand-500 text-white border-brand-500'
-                          : 'bg-white text-slate-600 border-slate-200 hover:border-brand-300'
+                          : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-brand-300'
                       }`}
                     >
                       {p.label}
@@ -292,7 +292,7 @@ export default function SocialMedia() {
               value={postContent}
               onChange={e => setPostContent(e.target.value)}
               rows={10}
-              className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 resize-none font-mono leading-relaxed"
+              className="w-full border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500 resize-none font-mono leading-relaxed"
               placeholder="Your post content..."
             />
 
@@ -300,13 +300,13 @@ export default function SocialMedia() {
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
               {imagePreview ? (
                 <div className="relative inline-block">
-                  <img src={imagePreview} alt="Upload preview" className="h-36 rounded-xl object-cover border border-slate-200" />
+                  <img src={imagePreview} alt="Upload preview" className="h-36 rounded-xl object-cover border border-slate-700" />
                   <button onClick={() => setImagePreview(null)} className="absolute top-2 right-2 bg-black/50 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">✕</button>
                 </div>
               ) : (
                 <button
                   onClick={() => fileRef.current?.click()}
-                  className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-slate-200 rounded-xl text-sm text-slate-500 hover:border-brand-300 hover:text-brand-500 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-slate-700 rounded-xl text-sm text-slate-500 hover:border-brand-300 hover:text-brand-400 transition-colors"
                 >
                   <Image size={16} /> Add photo / video
                 </button>
@@ -326,19 +326,19 @@ export default function SocialMedia() {
 
       {/* Recent posts */}
       <Card>
-        <CardHeader><h3 className="font-semibold text-slate-900 text-sm">Recent Posts</h3></CardHeader>
-        <div className="divide-y divide-slate-50">
+        <CardHeader><h3 className="font-semibold text-white text-sm">Recent Posts</h3></CardHeader>
+        <div className="divide-y divide-slate-700/60">
           {recentPosts.map(post => (
             <div key={post.id} className="flex items-start gap-4 px-5 py-4">
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black flex-shrink-0 ${
-                post.platform === 'facebook' ? 'bg-blue-100 text-blue-700' :
-                post.platform === 'instagram' ? 'bg-pink-100 text-pink-700' :
-                post.platform === 'linkedin' ? 'bg-sky-100 text-sky-700' : 'bg-slate-100 text-slate-700'
+                post.platform === 'facebook' ? 'bg-blue-500/15 text-blue-400' :
+                post.platform === 'instagram' ? 'bg-pink-500/15 text-pink-400' :
+                post.platform === 'linkedin' ? 'bg-sky-500/15 text-sky-400' : 'bg-slate-700 text-slate-300'
               }`}>
                 {PLATFORM_ICONS[post.platform]}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-slate-700 line-clamp-2">{post.content}</p>
+                <p className="text-sm text-slate-300 line-clamp-2">{post.content}</p>
                 <div className="flex items-center gap-4 mt-2">
                   <Badge variant={post.status === 'published' ? 'success' : post.status === 'scheduled' ? 'info' : 'default'}>
                     {post.status}
@@ -352,7 +352,7 @@ export default function SocialMedia() {
                   <span className="flex items-center gap-1"><ThumbsUp size={12} />{post.likes}</span>
                   <span className="flex items-center gap-1"><MessageCircle size={12} />{post.comments}</span>
                   <span className="flex items-center gap-1"><Share size={12} />{post.shares}</span>
-                  <span className="flex items-center gap-1 text-brand-500 font-medium"><Link2 size={12} />{post.reach?.toLocaleString()}</span>
+                  <span className="flex items-center gap-1 text-brand-400 font-medium"><Link2 size={12} />{post.reach?.toLocaleString()}</span>
                 </div>
               )}
             </div>
@@ -378,29 +378,29 @@ export default function SocialMedia() {
             </div>
 
             {/* Instructions */}
-            <div className="bg-slate-50 rounded-xl p-4 text-xs text-slate-600 leading-relaxed">
+            <div className="bg-slate-700/30 rounded-xl p-4 text-xs text-slate-400 leading-relaxed">
               {modalConfig.helpText}
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">{modalConfig.tokenLabel} <span className="text-red-400">*</span></label>
+              <label className="block text-xs font-medium text-slate-400 mb-1">{modalConfig.tokenLabel} <span className="text-red-400">*</span></label>
               <input
                 type="password"
                 value={formToken}
                 onChange={e => { setFormToken(e.target.value); setFormError('') }}
                 placeholder={modalConfig.tokenPlaceholder}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400"
+                className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">{modalConfig.accountLabel} <span className="text-red-400">*</span></label>
+              <label className="block text-xs font-medium text-slate-400 mb-1">{modalConfig.accountLabel} <span className="text-red-400">*</span></label>
               <input
                 type="text"
                 value={formAccountId}
                 onChange={e => { setFormAccountId(e.target.value); setFormError('') }}
                 placeholder={modalConfig.accountPlaceholder}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400"
+                className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500"
               />
             </div>
 
@@ -419,7 +419,7 @@ export default function SocialMedia() {
       {/* Disconnect confirm modal */}
       <Modal open={disconnectConfirm !== null} onClose={() => setDisconnectConfirm(null)} title="Disconnect Account" size="sm">
         <div className="p-6 space-y-4">
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-slate-400">
             Are you sure you want to disconnect <span className="font-semibold">{disconnectConfirm ? PLATFORM_CONFIGS.find(p => p.id === disconnectConfirm)?.label : ''}</span>? Your saved credentials will be removed.
           </p>
           <div className="flex gap-3">

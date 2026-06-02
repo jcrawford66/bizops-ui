@@ -47,16 +47,16 @@ export default function Revenue() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Revenue (MTD)" value="$142,500" change={8.3} changeLabel="vs last month" icon={DollarSign} />
-        <StatCard title="Gross Profit" value="$60,500" change={6.1} changeLabel="vs last month" icon={TrendingUp} iconColor="text-emerald-500" iconBg="bg-emerald-50" />
-        <StatCard title="Gross Margin" value="42.5%" change={-1.0} changeLabel="vs last month" icon={Percent} iconColor="text-purple-500" iconBg="bg-purple-50" />
-        <StatCard title="YTD Revenue" value="$716,500" change={14.2} changeLabel="vs last year" icon={DollarSign} iconColor="text-blue-500" iconBg="bg-blue-50" />
+        <StatCard title="Gross Profit" value="$60,500" change={6.1} changeLabel="vs last month" icon={TrendingUp} iconColor="text-emerald-500" iconBg="bg-emerald-500/15" />
+        <StatCard title="Gross Margin" value="42.5%" change={-1.0} changeLabel="vs last month" icon={Percent} iconColor="text-purple-500" iconBg="bg-purple-500/15" />
+        <StatCard title="YTD Revenue" value="$716,500" change={14.2} changeLabel="vs last year" icon={DollarSign} iconColor="text-blue-500" iconBg="bg-blue-500/15" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Revenue + margin trend */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <h3 className="font-semibold text-slate-900 text-sm">Revenue & Margin Trend</h3>
+            <h3 className="font-semibold text-white text-sm">Revenue & Margin Trend</h3>
             <p className="text-xs text-slate-500 mt-0.5">Monthly overview — last 6 months</p>
           </CardHeader>
           <CardBody>
@@ -72,10 +72,10 @@ export default function Revenue() {
                     <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e3a4a" />
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-                <Tooltip formatter={(v: unknown) => [`$${(v as number).toLocaleString()}`, '']} contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: 12 }} />
+                <Tooltip formatter={(v: unknown) => [`$${(v as number).toLocaleString()}`, '']} contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }} />
                 <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11 }} />
                 <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={2} fill="url(#revG)" name="Revenue" />
                 <Area type="monotone" dataKey="cost" stroke="#f43f5e" strokeWidth={2} fill="url(#costG)" name="Cost of Goods" />
@@ -87,7 +87,7 @@ export default function Revenue() {
         {/* Revenue by category pie */}
         <Card>
           <CardHeader>
-            <h3 className="font-semibold text-slate-900 text-sm">Revenue by Category</h3>
+            <h3 className="font-semibold text-white text-sm">Revenue by Category</h3>
           </CardHeader>
           <CardBody>
             <ResponsiveContainer width="100%" height={160}>
@@ -95,7 +95,7 @@ export default function Revenue() {
                 <Pie data={byCategory} cx="50%" cy="50%" innerRadius={45} outerRadius={70} dataKey="value" paddingAngle={3}>
                   {byCategory.map((c, i) => <Cell key={i} fill={c.color} />)}
                 </Pie>
-                <Tooltip formatter={(v: unknown) => [`$${(v as number).toLocaleString()}`, '']} contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: 12 }} />
+                <Tooltip formatter={(v: unknown) => [`$${(v as number).toLocaleString()}`, '']} contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }} />
               </PieChart>
             </ResponsiveContainer>
             <div className="space-y-2 mt-2">
@@ -103,9 +103,9 @@ export default function Revenue() {
                 <div key={c.name} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: c.color }} />
-                    <span className="text-slate-600">{c.name}</span>
+                    <span className="text-slate-400">{c.name}</span>
                   </div>
-                  <span className="font-medium text-slate-900">${(c.value / 1000).toFixed(1)}k</span>
+                  <span className="font-medium text-white">${(c.value / 1000).toFixed(1)}k</span>
                 </div>
               ))}
             </div>
@@ -116,12 +116,12 @@ export default function Revenue() {
       {/* Top products */}
       <Card>
         <CardHeader>
-          <h3 className="font-semibold text-slate-900 text-sm">Top Revenue Drivers</h3>
+          <h3 className="font-semibold text-white text-sm">Top Revenue Drivers</h3>
         </CardHeader>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100">
+              <tr className="border-b border-slate-700/60">
                 <th className="text-left px-5 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Product / Service</th>
                 <th className="text-right px-5 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Revenue</th>
                 <th className="text-right px-5 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Margin</th>
@@ -130,9 +130,9 @@ export default function Revenue() {
             </thead>
             <tbody>
               {topProducts.map((p, i) => (
-                <tr key={i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                  <td className="px-5 py-3 font-medium text-slate-900">{p.name}</td>
-                  <td className="px-5 py-3 text-right text-slate-700">${p.revenue.toLocaleString()}</td>
+                <tr key={i} className="border-b border-slate-700/50 hover:bg-slate-700/40 transition-colors">
+                  <td className="px-5 py-3 font-medium text-white">{p.name}</td>
+                  <td className="px-5 py-3 text-right text-slate-300">${p.revenue.toLocaleString()}</td>
                   <td className="px-5 py-3 text-right">
                     <Badge variant={p.margin >= 50 ? 'success' : p.margin >= 30 ? 'info' : 'warning'}>
                       {p.margin}%
@@ -151,18 +151,18 @@ export default function Revenue() {
       <Modal open={syncOpen} onClose={() => setSyncOpen(false)} title="Sync Revenue Data">
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Platform</label>
-            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+            <label className="block text-xs font-medium text-slate-400 mb-1">Platform</label>
+            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
               {['Square','Stripe','Shopify','QuickBooks','PayPal','Clover','Toast','Other'].map(p => <option key={p}>{p}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">API Key / Secret Key</label>
-            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+            <label className="block text-xs font-medium text-slate-400 mb-1">API Key / Secret Key</label>
+            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Location / Account ID</label>
-            <input type="text" value={syncForm.locationId} onChange={e => setSyncForm(f => ({ ...f, locationId: e.target.value }))} placeholder="Your location or account ID" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+            <label className="block text-xs font-medium text-slate-400 mb-1">Location / Account ID</label>
+            <input type="text" value={syncForm.locationId} onChange={e => setSyncForm(f => ({ ...f, locationId: e.target.value }))} placeholder="Your location or account ID" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
           </div>
           <div className="flex gap-3 pt-2">
             <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>

@@ -11,7 +11,7 @@ export default function Card({ children, className = '', onClick, hover }: Props
   return (
     <div
       onClick={onClick}
-      className={`bg-white rounded-xl border border-slate-200 shadow-sm ${hover ? 'hover:shadow-md hover:border-brand-200 cursor-pointer transition-all' : ''} ${className}`}
+      className={`bg-slate-800 rounded-xl border border-slate-700 shadow-sm ${hover ? 'hover:shadow-md hover:border-brand-500/40 cursor-pointer transition-all' : ''} ${className}`}
     >
       {children}
     </div>
@@ -19,7 +19,7 @@ export default function Card({ children, className = '', onClick, hover }: Props
 }
 
 export function CardHeader({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <div className={`px-5 py-4 border-b border-slate-100 ${className}`}>{children}</div>
+  return <div className={`px-5 py-4 border-b border-slate-700 ${className}`}>{children}</div>
 }
 
 export function CardBody({ children, className = '' }: { children: ReactNode; className?: string }) {

@@ -7,8 +7,8 @@
 @layer base {
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background-color: #dff4f7;
-    @apply text-slate-900 antialiased;
+    background-color: #0d1b2a;
+    @apply text-slate-100 antialiased;
     font-family: 'Inter', system-ui, sans-serif;
   }
   #root {

@@ -42,9 +42,9 @@ export default function Dashboard() {
     <div className="space-y-6">
       {/* Alert banner */}
       {unread.length > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-3">
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-center gap-3">
           <AlertTriangle size={18} className="text-amber-500 flex-shrink-0" />
-          <p className="text-sm text-amber-800">
+          <p className="text-sm text-amber-300">
             <span className="font-semibold">{unread.length} alert{unread.length > 1 ? 's' : ''} need your attention</span>
             {' '}— {unread[0].message}
           </p>
@@ -54,9 +54,9 @@ export default function Dashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Revenue (MTD)" value="$142,500" change={8.3} changeLabel="vs last month" icon={DollarSign} />
-        <StatCard title="Gross Margin" value="42.3%" change={-1.2} changeLabel="vs last month" icon={TrendingUp} iconColor="text-emerald-500" iconBg="bg-emerald-50" />
-        <StatCard title="Active Customers" value="342" change={5.1} changeLabel="vs last month" icon={Users} iconColor="text-blue-500" iconBg="bg-blue-50" />
-        <StatCard title="Inventory Alerts" value="14 items" icon={Package} iconColor="text-amber-500" iconBg="bg-amber-50" alert />
+        <StatCard title="Gross Margin" value="42.3%" change={-1.2} changeLabel="vs last month" icon={TrendingUp} iconColor="text-emerald-500" iconBg="bg-emerald-500/15" />
+        <StatCard title="Active Customers" value="342" change={5.1} changeLabel="vs last month" icon={Users} iconColor="text-blue-500" iconBg="bg-blue-500/15" />
+        <StatCard title="Inventory Alerts" value="14 items" icon={Package} iconColor="text-amber-500" iconBg="bg-amber-500/15" alert />
       </div>
 
       {/* Charts row */}
@@ -66,10 +66,10 @@ export default function Dashboard() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-slate-900 text-sm">Revenue vs Expenses</h3>
+                <h3 className="font-semibold text-white text-sm">Revenue vs Expenses</h3>
                 <p className="text-xs text-slate-500 mt-0.5">Last 6 months</p>
               </div>
-              <Link to="/revenue" className="text-xs text-brand-500 hover:underline flex items-center gap-1">
+              <Link to="/revenue" className="text-xs text-brand-400 hover:underline flex items-center gap-1">
                 View full report <ArrowRight size={12} />
               </Link>
             </div>
@@ -87,10 +87,10 @@ export default function Dashboard() {
                     <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e3a4a" />
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-                <Tooltip formatter={(v: unknown) => [`$${(v as number).toLocaleString()}`, '']} contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: 12 }} />
+                <Tooltip formatter={(v: unknown) => [`$${(v as number).toLocaleString()}`, '']} contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }} />
                 <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={2} fill="url(#revGrad)" name="Revenue" />
                 <Area type="monotone" dataKey="expenses" stroke="#f59e0b" strokeWidth={2} fill="url(#expGrad)" name="Expenses" />
               </AreaChart>
@@ -102,8 +102,8 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-slate-900 text-sm">Team Efficiency</h3>
-              <Link to="/employees" className="text-xs text-brand-500 hover:underline flex items-center gap-1">
+              <h3 className="font-semibold text-white text-sm">Team Efficiency</h3>
+              <Link to="/employees" className="text-xs text-brand-400 hover:underline flex items-center gap-1">
                 View all <ArrowRight size={12} />
               </Link>
             </div>
@@ -111,10 +111,10 @@ export default function Dashboard() {
           <CardBody>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={teamData} layout="vertical" barSize={10}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e3a4a" horizontal={false} />
                 <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} width={55} />
-                <Tooltip formatter={(v: unknown) => [`${v as number}%`, 'Efficiency']} contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: 12 }} />
+                <Tooltip formatter={(v: unknown) => [`${v as number}%`, 'Efficiency']} contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }} />
                 <Bar dataKey="efficiency" fill="#6366f1" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -127,13 +127,13 @@ export default function Dashboard() {
         {/* Recent activity */}
         <Card>
           <CardHeader>
-            <h3 className="font-semibold text-slate-900 text-sm">Recent Activity</h3>
+            <h3 className="font-semibold text-white text-sm">Recent Activity</h3>
           </CardHeader>
           <CardBody className="p-0">
             {recentActivity.map((item, i) => (
-              <div key={item.id} className={`flex items-start gap-3 px-5 py-3 ${i < recentActivity.length - 1 ? 'border-b border-slate-50' : ''}`}>
+              <div key={item.id} className={`flex items-start gap-3 px-5 py-3 ${i < recentActivity.length - 1 ? 'border-b border-slate-700/50' : ''}`}>
                 <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${TYPE_DOT[item.type]}`} />
-                <p className="text-sm text-slate-700 flex-1">{item.text}</p>
+                <p className="text-sm text-slate-300 flex-1">{item.text}</p>
                 <span className="text-xs text-slate-400 whitespace-nowrap">{item.time}</span>
               </div>
             ))}
@@ -143,16 +143,16 @@ export default function Dashboard() {
         {/* Quick links */}
         <Card>
           <CardHeader>
-            <h3 className="font-semibold text-slate-900 text-sm">Quick Actions</h3>
+            <h3 className="font-semibold text-white text-sm">Quick Actions</h3>
           </CardHeader>
           <CardBody className="grid grid-cols-2 gap-3">
             {[
-              { label: 'Add Customer', path: '/customers', color: 'bg-blue-50 text-blue-700 hover:bg-blue-100' },
-              { label: 'New Invoice', path: '/expenses', color: 'bg-purple-50 text-purple-700 hover:bg-purple-100' },
-              { label: 'Log Inventory', path: '/inventory', color: 'bg-amber-50 text-amber-700 hover:bg-amber-100' },
-              { label: 'Schedule Post', path: '/social', color: 'bg-pink-50 text-pink-700 hover:bg-pink-100' },
-              { label: 'View Calendar', path: '/calendar', color: 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' },
-              { label: 'Integrations', path: '/integrations', color: 'bg-slate-100 text-slate-700 hover:bg-slate-200' },
+              { label: 'Add Customer', path: '/customers', color: 'bg-blue-500/15 text-blue-300 hover:bg-blue-500/25' },
+              { label: 'New Invoice', path: '/expenses', color: 'bg-teal-500/15 text-teal-300 hover:bg-teal-500/25' },
+              { label: 'Log Inventory', path: '/inventory', color: 'bg-amber-50 text-amber-400 hover:bg-amber-100' },
+              { label: 'Schedule Post', path: '/social', color: 'bg-pink-500/15 text-pink-300 hover:bg-pink-500/25' },
+              { label: 'View Calendar', path: '/calendar', color: 'bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25' },
+              { label: 'Integrations', path: '/integrations', color: 'bg-slate-700 text-slate-300 hover:bg-slate-200' },
             ].map(({ label, path, color }) => (
               <Link
                 key={label}

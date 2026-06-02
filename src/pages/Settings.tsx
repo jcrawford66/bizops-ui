@@ -18,10 +18,10 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   return (
     <button
       onClick={() => onChange(!checked)}
-      className={`w-10 h-5.5 relative rounded-full transition-colors ${checked ? 'bg-brand-500' : 'bg-slate-200'}`}
+      className={`w-10 h-5.5 relative rounded-full transition-colors ${checked ? 'bg-brand-500' : 'bg-slate-700'}`}
       style={{ height: '22px', width: '44px' }}
     >
-      <span className={`absolute top-0.5 w-4.5 h-4.5 bg-white rounded-full shadow transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} style={{ width: '18px', height: '18px', top: '2px', left: '2px', transform: checked ? 'translateX(22px)' : 'translateX(0)' }} />
+      <span className={`absolute top-0.5 w-4.5 h-4.5 bg-slate-800 rounded-full shadow transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} style={{ width: '18px', height: '18px', top: '2px', left: '2px', transform: checked ? 'translateX(22px)' : 'translateX(0)' }} />
     </button>
   )
 }
@@ -30,7 +30,7 @@ function FieldRow({ label, description, children }: { label: string; description
   return (
     <div className="flex items-center justify-between py-4 border-b border-slate-50 last:border-0">
       <div>
-        <p className="text-sm font-medium text-slate-900">{label}</p>
+        <p className="text-sm font-medium text-white">{label}</p>
         {description && <p className="text-xs text-slate-500 mt-0.5">{description}</p>}
       </div>
       <div className="flex-shrink-0 ml-6">{children}</div>
@@ -55,7 +55,7 @@ export default function Settings() {
                 <button
                   key={id}
                   onClick={() => setTab(id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${tab === id ? 'bg-brand-50 text-brand-600 font-medium' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${tab === id ? 'bg-brand-500/15 text-brand-400 font-medium' : 'text-slate-400 hover:bg-slate-700/40 hover:text-white'}`}
                 >
                   <Icon size={16} /> {label}
                 </button>
@@ -68,7 +68,7 @@ export default function Settings() {
         <div className="flex-1 min-w-0">
           {tab === 'business' && (
             <Card>
-              <CardHeader><h3 className="font-semibold text-slate-900 text-sm">Business Profile</h3></CardHeader>
+              <CardHeader><h3 className="font-semibold text-white text-sm">Business Profile</h3></CardHeader>
               <CardBody className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   {[
@@ -78,19 +78,19 @@ export default function Settings() {
                     { label: 'State', key: 'state' }, { label: 'ZIP Code', key: 'zip' },
                   ].map(({ label, key }) => (
                     <div key={key}>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">{label}</label>
+                      <label className="block text-xs font-medium text-slate-400 mb-1">{label}</label>
                       <input
                         type="text"
                         value={biz[key as keyof typeof biz]}
                         onChange={e => setBiz(b => ({ ...b, [key]: e.target.value }))}
-                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400"
+                        className="w-full border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500"
                       />
                     </div>
                   ))}
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Revenue Goal (Monthly)</label>
-                  <input type="number" placeholder="150000" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Revenue Goal (Monthly)</label>
+                  <input type="number" placeholder="150000" className="w-full border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
                 </div>
                 <Button icon={<Save size={14} />}>Save Changes</Button>
               </CardBody>
@@ -99,7 +99,7 @@ export default function Settings() {
 
           {tab === 'notifications' && (
             <Card>
-              <CardHeader><h3 className="font-semibold text-slate-900 text-sm">Notification Preferences</h3></CardHeader>
+              <CardHeader><h3 className="font-semibold text-white text-sm">Notification Preferences</h3></CardHeader>
               <CardBody>
                 <div className="mb-6">
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Channels</p>
@@ -122,25 +122,25 @@ export default function Settings() {
 
           {tab === 'security' && (
             <Card>
-              <CardHeader><h3 className="font-semibold text-slate-900 text-sm">Security</h3></CardHeader>
+              <CardHeader><h3 className="font-semibold text-white text-sm">Security</h3></CardHeader>
               <CardBody className="space-y-6">
                 <div className="space-y-4">
                   <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Change Password</h4>
                   {['Current Password', 'New Password', 'Confirm New Password'].map(l => (
                     <div key={l}>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">{l}</label>
-                      <input type="password" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+                      <label className="block text-xs font-medium text-slate-400 mb-1">{l}</label>
+                      <input type="password" className="w-full border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
                     </div>
                   ))}
                   <Button icon={<Save size={14} />}>Update Password</Button>
                 </div>
-                <div className="border-t border-slate-100 pt-6">
+                <div className="border-t border-slate-700/60 pt-6">
                   <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-4">Two-Factor Authentication</h4>
                   <FieldRow label="Enable 2FA" description="Require a code when logging in"><Toggle checked={false} onChange={() => {}} /></FieldRow>
                 </div>
-                <div className="border-t border-slate-100 pt-6">
+                <div className="border-t border-slate-700/60 pt-6">
                   <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">API Keys</h4>
-                  <p className="text-sm text-slate-600 mb-3">Generate API keys to connect external services to BizOps.</p>
+                  <p className="text-sm text-slate-400 mb-3">Generate API keys to connect external services to BizOps.</p>
                   <Button variant="secondary" size="sm">Generate New Key</Button>
                 </div>
               </CardBody>
@@ -149,7 +149,7 @@ export default function Settings() {
 
           {tab === 'appearance' && (
             <Card>
-              <CardHeader><h3 className="font-semibold text-slate-900 text-sm">Appearance</h3></CardHeader>
+              <CardHeader><h3 className="font-semibold text-white text-sm">Appearance</h3></CardHeader>
               <CardBody className="space-y-6">
                 <div>
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Accent Color</p>
@@ -159,7 +159,7 @@ export default function Settings() {
                         key={c}
                         onClick={() => setAppearance(a => ({ ...a, accentColor: c }))}
                         style={{ background: c }}
-                        className={`w-8 h-8 rounded-full border-2 transition-transform ${appearance.accentColor === c ? 'border-slate-900 scale-110' : 'border-transparent'}`}
+                        className={`w-8 h-8 rounded-full border-2 transition-transform ${appearance.accentColor === c ? 'border-white scale-110' : 'border-transparent'}`}
                       />
                     ))}
                   </div>
@@ -176,11 +176,11 @@ export default function Settings() {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-slate-900 text-sm">Team Members</h3>
+                  <h3 className="font-semibold text-white text-sm">Team Members</h3>
                   <Button size="sm">Invite Member</Button>
                 </div>
               </CardHeader>
-              <div className="divide-y divide-slate-50">
+              <div className="divide-y divide-slate-700/60">
                 {[
                   { name: 'Justin Crawford', email: 'justin@mybiz.com', role: 'Owner', avatar: 'JC' },
                   { name: 'Sarah Johnson', email: 'sarah@mybiz.com', role: 'Manager', avatar: 'SJ' },
@@ -190,12 +190,12 @@ export default function Settings() {
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white text-xs font-bold">{m.avatar}</div>
                       <div>
-                        <p className="text-sm font-medium text-slate-900">{m.name}</p>
+                        <p className="text-sm font-medium text-white">{m.name}</p>
                         <p className="text-xs text-slate-500">{m.email}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <select defaultValue={m.role} className="border border-slate-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                      <select defaultValue={m.role} className="border border-slate-600 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-brand-400/40">
                         <option>Owner</option><option>Manager</option><option>Staff</option><option>Read Only</option>
                       </select>
                       {m.role !== 'Owner' && <Button variant="ghost" size="sm">Remove</Button>}
@@ -210,21 +210,21 @@ export default function Settings() {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-slate-900 text-sm">Webhook Endpoints</h3>
+                  <h3 className="font-semibold text-white text-sm">Webhook Endpoints</h3>
                   <Button size="sm">Add Endpoint</Button>
                 </div>
               </CardHeader>
               <CardBody className="space-y-4">
-                <p className="text-sm text-slate-600">Configure outbound webhooks to notify external systems when events occur in BizOps.</p>
+                <p className="text-sm text-slate-400">Configure outbound webhooks to notify external systems when events occur in BizOps.</p>
                 {[
                   { url: 'https://hooks.zapier.com/hooks/catch/abc123', events: ['new_customer', 'invoice_paid'], status: 'active' },
                   { url: 'https://api.myapp.com/bizops/events', events: ['low_stock', 'margin_alert'], status: 'active' },
                 ].map((wh, i) => (
-                  <div key={i} className="flex items-start justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
+                  <div key={i} className="flex items-start justify-between p-4 bg-slate-700/40 rounded-xl border border-slate-600">
                     <div>
-                      <p className="font-mono text-xs text-slate-700">{wh.url}</p>
+                      <p className="font-mono text-xs text-slate-300">{wh.url}</p>
                       <div className="flex gap-1 mt-2">
-                        {wh.events.map(e => <span key={e} className="bg-white border border-slate-200 text-xs text-slate-600 px-2 py-0.5 rounded-full">{e}</span>)}
+                        {wh.events.map(e => <span key={e} className="bg-slate-800 border border-slate-600 text-xs text-slate-400 px-2 py-0.5 rounded-full">{e}</span>)}
                       </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0 ml-4">

@@ -71,10 +71,10 @@ export default function Calendar() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-slate-900 text-sm">{monthName}</h3>
+              <h3 className="font-semibold text-white text-sm">{monthName}</h3>
               <div className="flex items-center gap-1">
-                <button onClick={prev} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"><ChevronLeft size={16} /></button>
-                <button onClick={next} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"><ChevronRight size={16} /></button>
+                <button onClick={prev} className="p-1.5 hover:bg-slate-700 rounded-lg text-slate-500 transition-colors"><ChevronLeft size={16} /></button>
+                <button onClick={next} className="p-1.5 hover:bg-slate-700 rounded-lg text-slate-500 transition-colors"><ChevronRight size={16} /></button>
               </div>
             </div>
           </CardHeader>
@@ -91,8 +91,8 @@ export default function Calendar() {
                 const dayEvents = eventsForDay(day)
                 const isToday = day === today.getDate() && current.month === today.getMonth() && current.year === today.getFullYear()
                 return (
-                  <div key={day} className={`min-h-[72px] p-1 rounded-lg border transition-colors ${isToday ? 'border-brand-500 bg-brand-50' : 'border-transparent hover:bg-slate-50'}`}>
-                    <span className={`text-xs font-medium block mb-1 w-5 h-5 flex items-center justify-center rounded-full ${isToday ? 'bg-brand-500 text-white' : 'text-slate-500'}`}>
+                  <div key={day} className={`min-h-[72px] p-1 rounded-lg border transition-colors ${isToday ? 'border-brand-500 bg-brand-500/10' : 'border-transparent hover:bg-slate-700/40'}`}>
+                    <span className={`text-xs font-medium block mb-1 w-5 h-5 flex items-center justify-center rounded-full ${isToday ? 'bg-brand-500/100 text-white' : 'text-slate-500'}`}>
                       {day}
                     </span>
                     <div className="space-y-0.5">
@@ -114,14 +114,14 @@ export default function Calendar() {
 
         {/* Upcoming */}
         <Card>
-          <CardHeader><h3 className="font-semibold text-slate-900 text-sm">Upcoming Events</h3></CardHeader>
-          <div className="divide-y divide-slate-50">
+          <CardHeader><h3 className="font-semibold text-white text-sm">Upcoming Events</h3></CardHeader>
+          <div className="divide-y divide-slate-700/60">
             {upcomingEvents.map(ev => (
-              <div key={ev.id} onClick={() => setSelectedEvent(ev)} className="px-5 py-3 hover:bg-slate-50 cursor-pointer transition-colors">
+              <div key={ev.id} onClick={() => setSelectedEvent(ev)} className="px-5 py-3 hover:bg-slate-700/40 cursor-pointer transition-colors">
                 <div className="flex items-start gap-2">
                   <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${ev.color}`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-900 truncate">{ev.title}</p>
+                    <p className="text-sm font-medium text-white truncate">{ev.title}</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="flex items-center gap-1 text-xs text-slate-500">
                         <Clock size={10} />
@@ -144,16 +144,16 @@ export default function Calendar() {
           <div className="p-6 space-y-4">
             <div className="flex items-center gap-3">
               <div className={`w-3 h-3 rounded-full ${selectedEvent.color}`} />
-              <h3 className="font-semibold text-slate-900">{selectedEvent.title}</h3>
+              <h3 className="font-semibold text-white">{selectedEvent.title}</h3>
               <Badge variant={TYPE_VARIANT[selectedEvent.type]}>{selectedEvent.type}</Badge>
             </div>
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm text-slate-600">
+              <div className="flex items-center gap-2 text-sm text-slate-400">
                 <Clock size={15} />
                 {new Date(selectedEvent.start).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} · {new Date(selectedEvent.start).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} – {new Date(selectedEvent.end).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
               </div>
               {selectedEvent.customer && (
-                <div className="flex items-center gap-2 text-sm text-slate-600">
+                <div className="flex items-center gap-2 text-sm text-slate-400">
                   <User size={15} /> {selectedEvent.customer}
                 </div>
               )}
@@ -171,13 +171,13 @@ export default function Calendar() {
         <div className="p-6 space-y-4">
           {[{ label: 'Title', key: 'title' }, { label: 'Customer (optional)', key: 'customer' }, { label: 'Date', key: 'date', type: 'date' }, { label: 'Time', key: 'time', type: 'time' }].map(({ label, key, type = 'text' }) => (
             <div key={key}>
-              <label className="block text-xs font-medium text-slate-600 mb-1">{label}</label>
-              <input type={type} value={form[key as keyof typeof form]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+              <label className="block text-xs font-medium text-slate-400 mb-1">{label}</label>
+              <input type={type} value={form[key as keyof typeof form]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
             </div>
           ))}
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Type</label>
-            <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+            <label className="block text-xs font-medium text-slate-400 mb-1">Type</label>
+            <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
               {['appointment', 'meeting', 'task', 'reminder'].map(t => <option key={t}>{t}</option>)}
             </select>
           </div>
@@ -192,18 +192,18 @@ export default function Calendar() {
       <Modal open={syncOpen} onClose={() => setSyncOpen(false)} title="Connect Calendar / Booking Platform">
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Platform</label>
-            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+            <label className="block text-xs font-medium text-slate-400 mb-1">Platform</label>
+            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
               {['Google Calendar','Outlook / Microsoft 365','Acuity Scheduling','Calendly','Mindbody','Jobber','ServiceTitan','Other'].map(p => <option key={p}>{p}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">API Key / OAuth Token</label>
-            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your token or API key" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+            <label className="block text-xs font-medium text-slate-400 mb-1">API Key / OAuth Token</label>
+            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your token or API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Calendar / Account ID</label>
-            <input type="text" value={syncForm.calendarId} onChange={e => setSyncForm(f => ({ ...f, calendarId: e.target.value }))} placeholder="e.g. primary or your@email.com" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+            <label className="block text-xs font-medium text-slate-400 mb-1">Calendar / Account ID</label>
+            <input type="text" value={syncForm.calendarId} onChange={e => setSyncForm(f => ({ ...f, calendarId: e.target.value }))} placeholder="e.g. primary or your@email.com" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
           </div>
           <div className="flex gap-3 pt-2">
             <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>

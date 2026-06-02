@@ -75,39 +75,39 @@ export default function Inventory() {
       </div>
 
       {lowStock.length > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-start gap-3">
           <AlertTriangle size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-semibold text-amber-800">{lowStock.length} item{lowStock.length > 1 ? 's' : ''} below reorder point</p>
-            <p className="text-xs text-amber-700 mt-0.5">{lowStock.map(i => i.name).join(' · ')}</p>
+            <p className="text-sm font-semibold text-amber-300">{lowStock.length} item{lowStock.length > 1 ? 's' : ''} below reorder point</p>
+            <p className="text-xs text-amber-400 mt-0.5">{lowStock.map(i => i.name).join(' · ')}</p>
           </div>
         </div>
       )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Total SKUs" value={items.length.toString()} icon={Package} />
-        <StatCard title="Low / Out of Stock" value={`${lowStock.length} items`} icon={AlertTriangle} iconColor="text-amber-500" iconBg="bg-amber-50" alert={lowStock.length > 0} />
-        <StatCard title="Out of Stock" value={outOfStock.length.toString()} icon={AlertTriangle} iconColor="text-red-500" iconBg="bg-red-50" alert={outOfStock.length > 0} />
-        <StatCard title="Inventory Value" value={`$${totalValue.toLocaleString()}`} icon={Package} iconColor="text-emerald-500" iconBg="bg-emerald-50" />
+        <StatCard title="Low / Out of Stock" value={`${lowStock.length} items`} icon={AlertTriangle} iconColor="text-amber-500" iconBg="bg-amber-500/15" alert={lowStock.length > 0} />
+        <StatCard title="Out of Stock" value={outOfStock.length.toString()} icon={AlertTriangle} iconColor="text-red-500" iconBg="bg-red-500/15" alert={outOfStock.length > 0} />
+        <StatCard title="Inventory Value" value={`$${totalValue.toLocaleString()}`} icon={Package} iconColor="text-emerald-500" iconBg="bg-emerald-500/15" />
       </div>
 
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between gap-4">
-            <h3 className="font-semibold text-slate-900 text-sm">Inventory Register</h3>
+            <h3 className="font-semibold text-white text-sm">Inventory Register</h3>
             <input
               type="text"
               placeholder="Search by name or SKU..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 w-56"
+              className="border border-slate-700 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500 w-56"
             />
           </div>
         </CardHeader>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100">
+              <tr className="border-b border-slate-700/60">
                 {['Item', 'SKU', 'Category', 'Qty', 'Reorder At', 'Cost', 'Price', 'Status', 'Updated', ''].map(h => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">{h}</th>
                 ))}
@@ -118,20 +118,20 @@ export default function Inventory() {
                 const status = stockStatus(item)
                 const editing = editingId === item.id
                 return (
-                  <tr key={item.id} className={`border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${item.quantity === 0 ? 'bg-red-50/30' : item.quantity <= item.reorderPoint ? 'bg-amber-50/30' : ''}`}>
-                    <td className="px-4 py-2">{editing ? <input value={editForm.name} onChange={e => setEditForm(f=>({...f,name:e.target.value}))} className="w-32 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="font-medium text-slate-900">{item.name}</span>}</td>
-                    <td className="px-4 py-2">{editing ? <input value={editForm.sku} onChange={e => setEditForm(f=>({...f,sku:e.target.value}))} className="w-20 border border-slate-200 rounded px-2 py-1 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-500 font-mono text-xs">{item.sku}</span>}</td>
-                    <td className="px-4 py-2">{editing ? <select value={editForm.category} onChange={e => setEditForm(f=>({...f,category:e.target.value}))} className="border border-slate-200 rounded px-1 py-1 text-xs focus:outline-none"><option>Products</option><option>Supplies</option><option>Services</option><option>Equipment</option><option>Marketing</option></select> : <span className="text-slate-600 text-sm">{item.category}</span>}</td>
-                    <td className="px-4 py-2">{editing ? <input type="number" value={editForm.quantity} onChange={e => setEditForm(f=>({...f,quantity:e.target.value}))} className="w-14 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className={`font-semibold ${item.quantity === 0 ? 'text-red-600' : item.quantity <= item.reorderPoint ? 'text-amber-600' : 'text-slate-900'}`}>{item.quantity}</span>}</td>
-                    <td className="px-4 py-2">{editing ? <input type="number" value={editForm.reorderPoint} onChange={e => setEditForm(f=>({...f,reorderPoint:e.target.value}))} className="w-14 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-500 text-sm">{item.reorderPoint}</span>}</td>
-                    <td className="px-4 py-2">{editing ? <input type="number" value={editForm.cost} onChange={e => setEditForm(f=>({...f,cost:e.target.value}))} className="w-16 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-700 text-sm">${item.cost}</span>}</td>
-                    <td className="px-4 py-2">{editing ? <input type="number" value={editForm.price} onChange={e => setEditForm(f=>({...f,price:e.target.value}))} className="w-16 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-700 text-sm">{item.price > 0 ? `$${item.price}` : '—'}</span>}</td>
+                  <tr key={item.id} className={`border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors ${item.quantity === 0 ? 'bg-red-50/30' : item.quantity <= item.reorderPoint ? 'bg-amber-50/30' : ''}`}>
+                    <td className="px-4 py-2">{editing ? <input value={editForm.name} onChange={e => setEditForm(f=>({...f,name:e.target.value}))} className="w-32 border border-slate-700 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="font-medium text-white">{item.name}</span>}</td>
+                    <td className="px-4 py-2">{editing ? <input value={editForm.sku} onChange={e => setEditForm(f=>({...f,sku:e.target.value}))} className="w-20 border border-slate-700 rounded px-2 py-1 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-500 font-mono text-xs">{item.sku}</span>}</td>
+                    <td className="px-4 py-2">{editing ? <select value={editForm.category} onChange={e => setEditForm(f=>({...f,category:e.target.value}))} className="border border-slate-700 rounded px-1 py-1 text-xs focus:outline-none"><option>Products</option><option>Supplies</option><option>Services</option><option>Equipment</option><option>Marketing</option></select> : <span className="text-slate-400 text-sm">{item.category}</span>}</td>
+                    <td className="px-4 py-2">{editing ? <input type="number" value={editForm.quantity} onChange={e => setEditForm(f=>({...f,quantity:e.target.value}))} className="w-14 border border-slate-700 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className={`font-semibold ${item.quantity === 0 ? 'text-red-600' : item.quantity <= item.reorderPoint ? 'text-amber-600' : 'text-white'}`}>{item.quantity}</span>}</td>
+                    <td className="px-4 py-2">{editing ? <input type="number" value={editForm.reorderPoint} onChange={e => setEditForm(f=>({...f,reorderPoint:e.target.value}))} className="w-14 border border-slate-700 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-500 text-sm">{item.reorderPoint}</span>}</td>
+                    <td className="px-4 py-2">{editing ? <input type="number" value={editForm.cost} onChange={e => setEditForm(f=>({...f,cost:e.target.value}))} className="w-16 border border-slate-700 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-300 text-sm">${item.cost}</span>}</td>
+                    <td className="px-4 py-2">{editing ? <input type="number" value={editForm.price} onChange={e => setEditForm(f=>({...f,price:e.target.value}))} className="w-16 border border-slate-700 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-300 text-sm">{item.price > 0 ? `$${item.price}` : '—'}</span>}</td>
                     <td className="px-4 py-2"><Badge variant={status.variant}>{status.label}</Badge></td>
                     <td className="px-4 py-2 text-slate-400 text-xs">{item.lastUpdated}</td>
                     <td className="px-3 py-2">
                       <div className="flex items-center gap-1">
                         {editing ? (
-                          <><button onClick={() => saveEdit(item.id)} className="text-teal-600 hover:text-teal-700 p-1" title="Save"><Save size={13} /></button><button onClick={() => setEditingId(null)} className="text-slate-400 hover:text-slate-600 p-1" title="Cancel"><X size={13} /></button></>
+                          <><button onClick={() => saveEdit(item.id)} className="text-teal-600 hover:text-teal-700 p-1" title="Save"><Save size={13} /></button><button onClick={() => setEditingId(null)} className="text-slate-400 hover:text-slate-400 p-1" title="Cancel"><X size={13} /></button></>
                         ) : (
                           <><button onClick={() => startEdit(item)} className="text-slate-400 hover:text-teal-600 p-1" title="Edit"><Pencil size={12} /></button><button onClick={() => handleDelete(item.id)} className="text-slate-300 hover:text-red-400 p-1" title="Delete"><X size={12} /></button></>
                         )}
@@ -155,18 +155,18 @@ export default function Inventory() {
               { label: 'Supplier', key: 'supplier' },
             ].map(({ label, key }) => (
               <div key={key}>
-                <label className="block text-xs font-medium text-slate-600 mb-1">{label}</label>
+                <label className="block text-xs font-medium text-slate-400 mb-1">{label}</label>
                 <input
                   type="text"
                   value={form[key as keyof typeof form]}
                   onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400"
+                  className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500"
                 />
               </div>
             ))}
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Category</label>
-              <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+              <label className="block text-xs font-medium text-slate-400 mb-1">Category</label>
+              <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
                 {['Products','Supplies','Services','Equipment','Marketing'].map(c => <option key={c}>{c}</option>)}
               </select>
             </div>
@@ -182,18 +182,18 @@ export default function Inventory() {
       <Modal open={syncOpen} onClose={() => setSyncOpen(false)} title="Sync POS / Inventory Platform">
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Platform</label>
-            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+            <label className="block text-xs font-medium text-slate-400 mb-1">Platform</label>
+            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
               {['Square','Shopify','Lightspeed','Clover','Toast','Vend','QuickBooks','Other'].map(p => <option key={p}>{p}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">API Key / Access Token</label>
-            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+            <label className="block text-xs font-medium text-slate-400 mb-1">API Key / Access Token</label>
+            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Location / Store ID</label>
-            <input type="text" value={syncForm.locationId} onChange={e => setSyncForm(f => ({ ...f, locationId: e.target.value }))} placeholder="Your location or store ID" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+            <label className="block text-xs font-medium text-slate-400 mb-1">Location / Store ID</label>
+            <input type="text" value={syncForm.locationId} onChange={e => setSyncForm(f => ({ ...f, locationId: e.target.value }))} placeholder="Your location or store ID" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
           </div>
           <div className="flex gap-3 pt-2">
             <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>

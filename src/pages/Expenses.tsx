@@ -100,9 +100,9 @@ export default function Expenses() {
       </div>
 
       {marginAlerts.map(e => (
-        <div key={e.id} className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl p-4">
+        <div key={e.id} className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
           <AlertTriangle size={16} className="text-red-500 flex-shrink-0" />
-          <p className="text-sm text-red-800">
+          <p className="text-sm text-red-300">
             <span className="font-semibold">Margin Alert —</span> {e.vendor} ({e.invoiceNo}) reduces gross margin by ~{Math.abs(e.estimatedMarginImpact!)}%
           </p>
         </div>
@@ -110,23 +110,23 @@ export default function Expenses() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Total Expenses (MTD)" value={`$${totalExpenses.toLocaleString()}`} icon={Receipt} />
-        <StatCard title="Overdue" value={`${overdue.length} items`} icon={AlertTriangle} iconColor="text-red-500" iconBg="bg-red-50" alert={overdue.length > 0} />
-        <StatCard title="Pending" value={`$${pending.reduce((s, e) => s + e.amount, 0).toLocaleString()}`} icon={Receipt} iconColor="text-amber-500" iconBg="bg-amber-50" />
-        <StatCard title="Largest Expense" value={`$${Math.max(...expenses.map(e => e.amount)).toLocaleString()}`} icon={Receipt} iconColor="text-purple-500" iconBg="bg-purple-50" />
+        <StatCard title="Overdue" value={`${overdue.length} items`} icon={AlertTriangle} iconColor="text-red-500" iconBg="bg-red-500/15" alert={overdue.length > 0} />
+        <StatCard title="Pending" value={`$${pending.reduce((s, e) => s + e.amount, 0).toLocaleString()}`} icon={Receipt} iconColor="text-amber-500" iconBg="bg-amber-500/15" />
+        <StatCard title="Largest Expense" value={`$${Math.max(...expenses.map(e => e.amount)).toLocaleString()}`} icon={Receipt} iconColor="text-purple-500" iconBg="bg-purple-500/15" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-slate-900 text-sm">Expense Register</h3>
-              <button className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700"><Filter size={13} /> Filter</button>
+              <h3 className="font-semibold text-white text-sm">Expense Register</h3>
+              <button className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300"><Filter size={13} /> Filter</button>
             </div>
           </CardHeader>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100">
+                <tr className="border-b border-slate-700/60">
                   <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Vendor</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Category</th>
                   <th className="text-right px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Amount</th>
@@ -139,40 +139,40 @@ export default function Expenses() {
                 {expenses.map(e => {
                   const editing = editingId === e.id
                   return (
-                    <tr key={e.id} className="border-b border-slate-50 hover:bg-slate-50/60 transition-colors">
+                    <tr key={e.id} className="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
                       <td className="px-4 py-3">
                         {editing ? (
                           <div className="space-y-1">
-                            <input value={editForm.vendor} onChange={ev => setEditForm(f => ({ ...f, vendor: ev.target.value }))} className="w-full border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" />
-                            <input value={editForm.invoiceNo} onChange={ev => setEditForm(f => ({ ...f, invoiceNo: ev.target.value }))} className="w-full border border-slate-200 rounded px-2 py-1 text-xs text-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-400" placeholder="Invoice #" />
-                            <input type="date" value={editForm.date} onChange={ev => setEditForm(f => ({ ...f, date: ev.target.value }))} className="w-full border border-slate-200 rounded px-2 py-1 text-xs text-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-400" />
+                            <input value={editForm.vendor} onChange={ev => setEditForm(f => ({ ...f, vendor: ev.target.value }))} className="w-full border border-slate-700 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" />
+                            <input value={editForm.invoiceNo} onChange={ev => setEditForm(f => ({ ...f, invoiceNo: ev.target.value }))} className="w-full border border-slate-700 rounded px-2 py-1 text-xs text-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-400" placeholder="Invoice #" />
+                            <input type="date" value={editForm.date} onChange={ev => setEditForm(f => ({ ...f, date: ev.target.value }))} className="w-full border border-slate-700 rounded px-2 py-1 text-xs text-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-400" />
                           </div>
                         ) : (
                           <div>
-                            <p className="font-medium text-slate-900">{e.vendor}</p>
+                            <p className="font-medium text-white">{e.vendor}</p>
                             <p className="text-xs text-slate-400">{e.invoiceNo} · {e.date}</p>
                           </div>
                         )}
                       </td>
                       <td className="px-4 py-3">
                         {editing ? (
-                          <select value={editForm.category} onChange={ev => setEditForm(f => ({ ...f, category: ev.target.value }))} className="border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400">
+                          <select value={editForm.category} onChange={ev => setEditForm(f => ({ ...f, category: ev.target.value }))} className="border border-slate-700 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400">
                             {CATEGORIES.map(c => <option key={c}>{c}</option>)}
                           </select>
                         ) : (
-                          <span className="text-slate-600">{e.category}</span>
+                          <span className="text-slate-400">{e.category}</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-right">
                         {editing ? (
-                          <input type="number" value={editForm.amount} onChange={ev => setEditForm(f => ({ ...f, amount: ev.target.value }))} className="w-24 border border-slate-200 rounded px-2 py-1 text-xs text-right focus:outline-none focus:ring-1 focus:ring-brand-400" />
+                          <input type="number" value={editForm.amount} onChange={ev => setEditForm(f => ({ ...f, amount: ev.target.value }))} className="w-24 border border-slate-700 rounded px-2 py-1 text-xs text-right focus:outline-none focus:ring-1 focus:ring-brand-400" />
                         ) : (
-                          <span className="font-semibold text-slate-900">${e.amount.toLocaleString()}</span>
+                          <span className="font-semibold text-white">${e.amount.toLocaleString()}</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-center">
                         {editing ? (
-                          <select value={editForm.status} onChange={ev => setEditForm(f => ({ ...f, status: ev.target.value }))} className="border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400">
+                          <select value={editForm.status} onChange={ev => setEditForm(f => ({ ...f, status: ev.target.value }))} className="border border-slate-700 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400">
                             {['paid','pending','overdue'].map(s => <option key={s}>{s}</option>)}
                           </select>
                         ) : (
@@ -181,7 +181,7 @@ export default function Expenses() {
                       </td>
                       <td className="px-4 py-3 text-center">
                         {editing ? (
-                          <input type="number" step="0.1" value={editForm.estimatedMarginImpact} onChange={ev => setEditForm(f => ({ ...f, estimatedMarginImpact: ev.target.value }))} className="w-16 border border-slate-200 rounded px-2 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-brand-400" placeholder="e.g. -2.5" />
+                          <input type="number" step="0.1" value={editForm.estimatedMarginImpact} onChange={ev => setEditForm(f => ({ ...f, estimatedMarginImpact: ev.target.value }))} className="w-16 border border-slate-700 rounded px-2 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-brand-400" placeholder="e.g. -2.5" />
                         ) : e.estimatedMarginImpact ? (
                           <span className={`text-xs font-medium ${e.estimatedMarginImpact < -2 ? 'text-red-600' : 'text-amber-600'}`}>{e.estimatedMarginImpact}%</span>
                         ) : (
@@ -193,7 +193,7 @@ export default function Expenses() {
                           {editing ? (
                             <>
                               <button onClick={() => saveEdit(e.id)} className="text-teal-600 hover:text-teal-700 p-1 rounded" title="Save"><Save size={14} /></button>
-                              <button onClick={() => setEditingId(null)} className="text-slate-400 hover:text-slate-600 p-1 rounded" title="Cancel"><X size={14} /></button>
+                              <button onClick={() => setEditingId(null)} className="text-slate-400 hover:text-slate-400 p-1 rounded" title="Cancel"><X size={14} /></button>
                             </>
                           ) : (
                             <>
@@ -212,14 +212,14 @@ export default function Expenses() {
         </Card>
 
         <Card>
-          <CardHeader><h3 className="font-semibold text-slate-900 text-sm">By Category</h3></CardHeader>
+          <CardHeader><h3 className="font-semibold text-white text-sm">By Category</h3></CardHeader>
           <div className="px-5 pb-4">
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={categoryTotals(expenses)} layout="vertical" barSize={10}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e3a4a" horizontal={false} />
                 <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} width={60} />
-                <Tooltip formatter={(v: unknown) => [`$${(v as number).toLocaleString()}`, '']} contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: 12 }} />
+                <Tooltip formatter={(v: unknown) => [`$${(v as number).toLocaleString()}`, '']} contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }} />
                 <Bar dataKey="amount" fill="#14b8a6" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -236,26 +236,26 @@ export default function Expenses() {
               { label: 'Amount ($)', key: 'amount' }, { label: 'Date', key: 'date', type: 'date' },
             ].map(({ label, key, type = 'text' }) => (
               <div key={key}>
-                <label className="block text-xs font-medium text-slate-600 mb-1">{label}</label>
-                <input type={type} value={addForm[key as keyof EditForm]} onChange={e => setAddForm(f => ({ ...f, [key]: e.target.value }))} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+                <label className="block text-xs font-medium text-slate-400 mb-1">{label}</label>
+                <input type={type} value={addForm[key as keyof EditForm]} onChange={e => setAddForm(f => ({ ...f, [key]: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
               </div>
             ))}
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Category</label>
-              <select value={addForm.category} onChange={e => setAddForm(f => ({ ...f, category: e.target.value }))} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+              <label className="block text-xs font-medium text-slate-400 mb-1">Category</label>
+              <select value={addForm.category} onChange={e => setAddForm(f => ({ ...f, category: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
                 {CATEGORIES.map(c => <option key={c}>{c}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
-              <select value={addForm.status} onChange={e => setAddForm(f => ({ ...f, status: e.target.value }))} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+              <label className="block text-xs font-medium text-slate-400 mb-1">Status</label>
+              <select value={addForm.status} onChange={e => setAddForm(f => ({ ...f, status: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
                 {['pending','paid','overdue'].map(s => <option key={s}>{s}</option>)}
               </select>
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Estimated Margin Impact % (e.g. -3.5)</label>
-            <input type="number" step="0.1" value={addForm.estimatedMarginImpact} onChange={e => setAddForm(f => ({ ...f, estimatedMarginImpact: e.target.value }))} placeholder="-2.5" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+            <label className="block text-xs font-medium text-slate-400 mb-1">Estimated Margin Impact % (e.g. -3.5)</label>
+            <input type="number" step="0.1" value={addForm.estimatedMarginImpact} onChange={e => setAddForm(f => ({ ...f, estimatedMarginImpact: e.target.value }))} placeholder="-2.5" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
           </div>
           <div className="flex gap-3 pt-2">
             <Button className="flex-1" onClick={handleAdd}>Save Expense</Button>
@@ -268,18 +268,18 @@ export default function Expenses() {
       <Modal open={syncOpen} onClose={() => setSyncOpen(false)} title="Sync Accounting Platform">
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Platform</label>
-            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+            <label className="block text-xs font-medium text-slate-400 mb-1">Platform</label>
+            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
               {['QuickBooks','FreshBooks','Xero','Wave','Sage','Zoho Books','Other'].map(p => <option key={p}>{p}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">API Key / Access Token</label>
-            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your token" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+            <label className="block text-xs font-medium text-slate-400 mb-1">API Key / Access Token</label>
+            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your token" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Company / Realm ID</label>
-            <input type="text" value={syncForm.companyId} onChange={e => setSyncForm(f => ({ ...f, companyId: e.target.value }))} placeholder="Your company identifier" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+            <label className="block text-xs font-medium text-slate-400 mb-1">Company / Realm ID</label>
+            <input type="text" value={syncForm.companyId} onChange={e => setSyncForm(f => ({ ...f, companyId: e.target.value }))} placeholder="Your company identifier" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
           </div>
           <div className="flex gap-3 pt-2">
             <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>

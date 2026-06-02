@@ -9,24 +9,23 @@ type Props = {
   icon: LucideIcon
   iconColor?: string
   iconBg?: string
-  prefix?: string
   alert?: boolean
 }
 
-export default function StatCard({ title, value, change, changeLabel, icon: Icon, iconColor = 'text-brand-500', iconBg = 'bg-brand-50', alert }: Props) {
+export default function StatCard({ title, value, change, changeLabel, icon: Icon, iconColor = 'text-brand-400', iconBg = 'bg-brand-500/10', alert }: Props) {
   const positive = change !== undefined && change >= 0
 
   return (
-    <div className={`bg-white rounded-xl border shadow-sm p-5 ${alert ? 'border-red-200 ring-1 ring-red-100' : 'border-slate-200'}`}>
+    <div className={`bg-slate-800 rounded-xl border shadow-sm p-5 ${alert ? 'border-red-500/40 ring-1 ring-red-500/20' : 'border-slate-700'}`}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{title}</p>
-          <p className="text-2xl font-bold text-slate-900 mt-1">{value}</p>
+          <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">{title}</p>
+          <p className="text-2xl font-bold text-white mt-1">{value}</p>
           {change !== undefined && (
-            <div className={`flex items-center gap-1 mt-1.5 text-xs font-medium ${positive ? 'text-emerald-600' : 'text-red-500'}`}>
+            <div className={`flex items-center gap-1 mt-1.5 text-xs font-medium ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
               {positive ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
               <span>{positive ? '+' : ''}{change}%</span>
-              {changeLabel && <span className="text-slate-400 font-normal">{changeLabel}</span>}
+              {changeLabel && <span className="text-slate-500 font-normal">{changeLabel}</span>}
             </div>
           )}
         </div>

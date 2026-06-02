@@ -20,16 +20,16 @@ const INITIAL_EMPLOYEES: Employee[] = [
   { id: '6', name: 'Derek Okafor',   role: 'Apprentice Tech',   efficiency: 64, tasksCompleted: 22, hoursLogged: 140, revenue: 8900 },
 ]
 
-const EFFICIENCY_COLORS = ['#0d9488','#14b8a6','#2dd4bf','#5eead4','#99f6e4','#ccfbf1']
+const EFFICIENCY_COLORS = ['#14b8a6','#f59e0b','#6366f1','#ec4899','#22c55e','#f97316']
 
 function EfficiencyBar({ value }: { value: number }) {
-  const color = value >= 85 ? 'bg-teal-500' : value >= 70 ? 'bg-amber-400' : 'bg-red-400'
+  const color = value >= 85 ? 'bg-teal-400' : value >= 70 ? 'bg-amber-400' : 'bg-red-400'
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+      <div className="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden">
         <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${value}%` }} />
       </div>
-      <span className="text-xs font-medium text-slate-700 w-8 text-right">{value}%</span>
+      <span className="text-xs font-medium text-slate-300 w-8 text-right">{value}%</span>
     </div>
   )
 }
@@ -114,20 +114,20 @@ export default function Employees() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Avg Efficiency" value={`${avgEfficiency}%`} change={2.1} icon={CheckCircle} iconColor="text-teal-600" iconBg="bg-teal-50" />
+        <StatCard title="Avg Efficiency" value={`${avgEfficiency}%`} change={2.1} icon={CheckCircle} iconColor="text-teal-600" iconBg="bg-teal-400/15" />
         <StatCard title="Team Members" value={`${employees.length}`} icon={Users2} />
-        <StatCard title="Total Hours (MTD)" value={totalHours.toString()} icon={Clock} iconColor="text-blue-500" iconBg="bg-blue-50" />
-        <StatCard title="Revenue Attributed" value={`$${totalRevenue.toLocaleString()}`} icon={DollarSign} iconColor="text-purple-500" iconBg="bg-purple-50" />
+        <StatCard title="Total Hours (MTD)" value={totalHours.toString()} icon={Clock} iconColor="text-blue-500" iconBg="bg-blue-500/15" />
+        <StatCard title="Revenue Attributed" value={`$${totalRevenue.toLocaleString()}`} icon={DollarSign} iconColor="text-purple-500" iconBg="bg-purple-500/15" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Editable employee table */}
         <Card className="lg:col-span-2">
-          <CardHeader><h3 className="font-semibold text-slate-900 text-sm">Team Performance</h3></CardHeader>
+          <CardHeader><h3 className="font-semibold text-white text-sm">Team Performance</h3></CardHeader>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100">
+                <tr className="border-b border-slate-700/60">
                   <th className="text-left px-5 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Employee</th>
                   <th className="text-left px-5 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide w-36">Efficiency</th>
                   <th className="text-right px-5 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">Tasks</th>
@@ -140,12 +140,12 @@ export default function Employees() {
                 {employees.map(emp => {
                   const editing = editingId === emp.id
                   return (
-                    <tr key={emp.id} className="border-b border-slate-50 hover:bg-slate-50/60 transition-colors">
+                    <tr key={emp.id} className="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
                       <td className="px-5 py-3">
                         {editing ? (
                           <div className="space-y-1">
-                            <input value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} className="w-full border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" />
-                            <input value={editForm.role} onChange={e => setEditForm(f => ({ ...f, role: e.target.value }))} className="w-full border border-slate-200 rounded px-2 py-1 text-xs text-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-400" placeholder="Role" />
+                            <input value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} className="w-full border border-slate-700 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" />
+                            <input value={editForm.role} onChange={e => setEditForm(f => ({ ...f, role: e.target.value }))} className="w-full border border-slate-700 rounded px-2 py-1 text-xs text-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-400" placeholder="Role" />
                           </div>
                         ) : (
                           <div className="flex items-center gap-3">
@@ -153,7 +153,7 @@ export default function Employees() {
                               {emp.name.split(' ').map(n => n[0]).join('')}
                             </div>
                             <div>
-                              <p className="font-medium text-slate-900">{emp.name}</p>
+                              <p className="font-medium text-white">{emp.name}</p>
                               <p className="text-xs text-slate-400">{emp.role}</p>
                             </div>
                           </div>
@@ -161,26 +161,26 @@ export default function Employees() {
                       </td>
                       <td className="px-5 py-3 w-36">
                         {editing ? (
-                          <input type="number" min="0" max="100" value={editForm.efficiency} onChange={e => setEditForm(f => ({ ...f, efficiency: e.target.value }))} className="w-20 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" />
+                          <input type="number" min="0" max="100" value={editForm.efficiency} onChange={e => setEditForm(f => ({ ...f, efficiency: e.target.value }))} className="w-20 border border-slate-700 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" />
                         ) : (
                           <EfficiencyBar value={emp.efficiency} />
                         )}
                       </td>
                       <td className="px-5 py-3 text-right">
-                        {editing ? <input type="number" value={editForm.tasksCompleted} onChange={e => setEditForm(f => ({ ...f, tasksCompleted: e.target.value }))} className="w-16 border border-slate-200 rounded px-2 py-1 text-xs text-right focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-700">{emp.tasksCompleted}</span>}
+                        {editing ? <input type="number" value={editForm.tasksCompleted} onChange={e => setEditForm(f => ({ ...f, tasksCompleted: e.target.value }))} className="w-16 border border-slate-700 rounded px-2 py-1 text-xs text-right focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-300">{emp.tasksCompleted}</span>}
                       </td>
                       <td className="px-5 py-3 text-right">
-                        {editing ? <input type="number" value={editForm.hoursLogged} onChange={e => setEditForm(f => ({ ...f, hoursLogged: e.target.value }))} className="w-16 border border-slate-200 rounded px-2 py-1 text-xs text-right focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-700">{emp.hoursLogged}</span>}
+                        {editing ? <input type="number" value={editForm.hoursLogged} onChange={e => setEditForm(f => ({ ...f, hoursLogged: e.target.value }))} className="w-16 border border-slate-700 rounded px-2 py-1 text-xs text-right focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-300">{emp.hoursLogged}</span>}
                       </td>
                       <td className="px-5 py-3 text-right">
-                        {editing ? <input type="number" value={editForm.revenue} onChange={e => setEditForm(f => ({ ...f, revenue: e.target.value }))} className="w-24 border border-slate-200 rounded px-2 py-1 text-xs text-right focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="font-semibold text-slate-900">${emp.revenue.toLocaleString()}</span>}
+                        {editing ? <input type="number" value={editForm.revenue} onChange={e => setEditForm(f => ({ ...f, revenue: e.target.value }))} className="w-24 border border-slate-700 rounded px-2 py-1 text-xs text-right focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="font-semibold text-white">${emp.revenue.toLocaleString()}</span>}
                       </td>
                       <td className="px-3 py-3">
                         <div className="flex items-center gap-1 justify-end">
                           {editing ? (
                             <>
                               <button onClick={() => saveEdit(emp.id)} className="text-teal-600 hover:text-teal-700 p-1 rounded transition-colors" title="Save"><Save size={14} /></button>
-                              <button onClick={() => setEditingId(null)} className="text-slate-400 hover:text-slate-600 p-1 rounded transition-colors" title="Cancel"><X size={14} /></button>
+                              <button onClick={() => setEditingId(null)} className="text-slate-400 hover:text-slate-400 p-1 rounded transition-colors" title="Cancel"><X size={14} /></button>
                             </>
                           ) : (
                             <>
@@ -201,7 +201,7 @@ export default function Employees() {
         {/* Circular efficiency chart */}
         <Card>
           <CardHeader>
-            <h3 className="font-semibold text-slate-900 text-sm">Efficiency Scores</h3>
+            <h3 className="font-semibold text-white text-sm">Efficiency Scores</h3>
             <p className="text-xs text-slate-400 mt-0.5">Each ring = one team member</p>
           </CardHeader>
           <CardBody className="pb-2">
@@ -222,7 +222,7 @@ export default function Employees() {
                 />
                 <Tooltip
                   formatter={(v: unknown) => [`${v as number}%`, 'Efficiency']}
-                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: 12 }}
+                  contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }}
                 />
               </RadialBarChart>
             </ResponsiveContainer>
@@ -232,10 +232,10 @@ export default function Employees() {
                 <div key={i} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: d.fill }} />
-                    <span className="text-slate-600">{d.name}</span>
+                    <span className="text-slate-400">{d.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="w-16 h-1.5 bg-slate-700 rounded-full overflow-hidden">
                       <div className="h-full rounded-full" style={{ width: `${d.efficiency}%`, background: d.fill }} />
                     </div>
                     <Badge variant={efficiencyBadge(d.efficiency)}>{d.efficiency}%</Badge>
@@ -249,14 +249,14 @@ export default function Employees() {
 
       {/* Revenue attribution bar */}
       <Card>
-        <CardHeader><h3 className="font-semibold text-slate-900 text-sm">Revenue Attributed per Team Member (MTD)</h3></CardHeader>
+        <CardHeader><h3 className="font-semibold text-white text-sm">Revenue Attributed per Team Member (MTD)</h3></CardHeader>
         <CardBody>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={employees.map(e => ({ name: e.name.split(' ')[0], revenue: e.revenue }))}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#1e3a4a" />
               <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-              <Tooltip formatter={(v: unknown) => [`$${(v as number).toLocaleString()}`, 'Revenue']} contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: 12 }} />
+              <Tooltip formatter={(v: unknown) => [`$${(v as number).toLocaleString()}`, 'Revenue']} contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }} />
               <Bar dataKey="revenue" fill="#14b8a6" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
@@ -272,12 +272,12 @@ export default function Employees() {
             { label: 'Hours Logged', key: 'hoursLogged' }, { label: 'Revenue Attributed ($)', key: 'revenue' },
           ].map(({ label, key }) => (
             <div key={key}>
-              <label className="block text-xs font-medium text-slate-600 mb-1">{label}</label>
+              <label className="block text-xs font-medium text-slate-400 mb-1">{label}</label>
               <input
                 type="text"
                 value={addForm[key as keyof EditForm]}
                 onChange={e => setAddForm(f => ({ ...f, [key]: e.target.value }))}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400"
+                className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500"
               />
             </div>
           ))}
@@ -292,18 +292,18 @@ export default function Employees() {
       <Modal open={syncOpen} onClose={() => setSyncOpen(false)} title="Sync HR / Scheduling Platform">
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Platform</label>
-            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+            <label className="block text-xs font-medium text-slate-400 mb-1">Platform</label>
+            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
               {['Gusto','BambooHR','ADP','Rippling','When I Work','Deputy','Homebase','Other'].map(p => <option key={p}>{p}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">API Key</label>
-            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+            <label className="block text-xs font-medium text-slate-400 mb-1">API Key</label>
+            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">API Endpoint (if applicable)</label>
-            <input type="text" value={syncForm.endpoint} onChange={e => setSyncForm(f => ({ ...f, endpoint: e.target.value }))} placeholder="https://api.yourplatform.com" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+            <label className="block text-xs font-medium text-slate-400 mb-1">API Endpoint (if applicable)</label>
+            <input type="text" value={syncForm.endpoint} onChange={e => setSyncForm(f => ({ ...f, endpoint: e.target.value }))} placeholder="https://api.yourplatform.com" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
           </div>
           <div className="flex gap-3 pt-2">
             <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>

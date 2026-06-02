@@ -23,7 +23,7 @@ export default function Layout() {
   const title = PAGE_TITLES[pathname] ?? 'BizOps'
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: '#dff4f7' }}>
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: '#0d1b2a' }}>
       <Sidebar />
       <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-60'}`}>
         <Header title={title} />
