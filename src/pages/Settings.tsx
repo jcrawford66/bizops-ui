@@ -188,17 +188,24 @@ export default function Settings() {
                 ].map(m => (
                   <div key={m.email} className="flex items-center justify-between px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white text-xs font-bold">{m.avatar}</div>
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white text-xs font-bold">{m.avatar}</div>
                       <div>
                         <p className="text-sm font-medium text-white">{m.name}</p>
                         <p className="text-xs text-slate-500">{m.email}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <select defaultValue={m.role} className="border border-slate-600 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-sky-400/40">
-                        <option>Owner</option><option>Manager</option><option>Staff</option><option>Read Only</option>
+                      <select defaultValue={m.role} className="bg-slate-700 border border-slate-600 text-slate-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-sky-400/40">
+                        <option className="bg-slate-800">Owner</option>
+                        <option className="bg-slate-800">Manager</option>
+                        <option className="bg-slate-800">Staff</option>
+                        <option className="bg-slate-800">Read Only</option>
                       </select>
-                      {m.role !== 'Owner' && <Button variant="ghost" size="sm">Remove</Button>}
+                      {m.role !== 'Owner' && (
+                        <button className="text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 border border-red-500/30 px-3 py-1.5 rounded-lg transition-colors">
+                          Remove
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
