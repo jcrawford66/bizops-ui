@@ -282,7 +282,7 @@ export default function Employees() {
                 {/* ── Donut ── */}
                 {chartType === 'donut' && (
                   <PieChart>
-                    <Pie data={radialData} cx="50%" cy="50%" innerRadius={55} outerRadius={90} dataKey="efficiency" paddingAngle={3} label={({ name, value }) => `${name} ${value}%`} labelLine={false}>
+                    <Pie data={radialData} cx="50%" cy="50%" innerRadius={55} outerRadius={90} dataKey="efficiency" paddingAngle={3}>
                       {radialData.map((d, i) => <Cell key={i} fill={d.fill} />)}
                     </Pie>
                     <Tooltip formatter={(v: unknown) => [`${v as number}%`, 'Efficiency']} contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }} />
