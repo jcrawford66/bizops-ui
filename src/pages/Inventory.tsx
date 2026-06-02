@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Package, AlertTriangle, Plus, Upload, RefreshCw } from 'lucide-react'
+import { Package, AlertTriangle, Plus, Upload, RefreshCw, Pencil, Save, X } from 'lucide-react'
 import StatCard from '../components/ui/StatCard'
 import Card, { CardHeader } from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
@@ -7,7 +7,7 @@ import Button from '../components/ui/Button'
 import Modal from '../components/ui/Modal'
 import type { InventoryItem } from '../types'
 
-const inventory: InventoryItem[] = [
+const INITIAL_INVENTORY: InventoryItem[] = [
   { id: '1', name: 'Widget Pro', sku: 'WP-001', category: 'Products', quantity: 3, reorderPoint: 20, cost: 42, price: 89, supplier: 'Acme Parts Co.', lastUpdated: '2025-06-08' },
   { id: '2', name: 'Office Supplies Bundle', sku: 'OS-012', category: 'Supplies', quantity: 8, reorderPoint: 25, cost: 15, price: 0, supplier: 'Office Pro', lastUpdated: '2025-06-06' },
   { id: '3', name: 'Service Kit Standard', sku: 'SK-004', category: 'Services', quantity: 44, reorderPoint: 10, cost: 28, price: 120, supplier: 'Internal', lastUpdated: '2025-06-05' },
@@ -18,6 +18,13 @@ const inventory: InventoryItem[] = [
   { id: '8', name: 'Promotional Materials', sku: 'PM-015', category: 'Marketing', quantity: 0, reorderPoint: 50, cost: 2, price: 0, supplier: 'PrintHouse', lastUpdated: '2025-05-28' },
 ]
 
+type InvForm = { name: string; sku: string; category: string; quantity: string; reorderPoint: string; cost: string; price: string; supplier: string }
+const blankInvForm = (i?: InventoryItem): InvForm => ({
+  name: i?.name ?? '', sku: i?.sku ?? '', category: i?.category ?? 'Products',
+  quantity: i?.quantity.toString() ?? '', reorderPoint: i?.reorderPoint.toString() ?? '',
+  cost: i?.cost.toString() ?? '', price: i?.price.toString() ?? '', supplier: i?.supplier ?? '',
+})
+
 function stockStatus(item: InventoryItem): { label: string; variant: 'error' | 'warning' | 'success' } {
   if (item.quantity === 0) return { label: 'Out of Stock', variant: 'error' }
   if (item.quantity <= item.reorderPoint) return { label: 'Low Stock', variant: 'warning' }
@@ -25,14 +32,36 @@ function stockStatus(item: InventoryItem): { label: string; variant: 'error' | '
 }
 
 export default function Inventory() {
+  const [items, setItems] = useState<InventoryItem[]>(INITIAL_INVENTORY)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editForm, setEditForm] = useState<InvForm>(blankInvForm())
   const [addOpen, setAddOpen] = useState(false)
-  const [form, setForm] = useState({ name: '', sku: '', category: '', quantity: '', reorderPoint: '', cost: '', price: '', supplier: '' })
+  const [form, setForm] = useState<InvForm>(blankInvForm())
   const [search, setSearch] = useState('')
+  const [syncOpen, setSyncOpen] = useState(false)
+  const [syncForm, setSyncForm] = useState({ platform: 'Square', apiKey: '', locationId: '' })
 
-  const lowStock = inventory.filter(i => i.quantity <= i.reorderPoint)
-  const outOfStock = inventory.filter(i => i.quantity === 0)
-  const totalValue = inventory.reduce((s, i) => s + i.quantity * i.cost, 0)
-  const filtered = inventory.filter(i => i.name.toLowerCase().includes(search.toLowerCase()) || i.sku.toLowerCase().includes(search.toLowerCase()))
+  const lowStock = items.filter(i => i.quantity <= i.reorderPoint)
+  const outOfStock = items.filter(i => i.quantity === 0)
+  const totalValue = items.reduce((s, i) => s + i.quantity * i.cost, 0)
+  const filtered = items.filter(i => i.name.toLowerCase().includes(search.toLowerCase()) || i.sku.toLowerCase().includes(search.toLowerCase()))
+
+  const startEdit = (i: InventoryItem) => { setEditingId(i.id); setEditForm(blankInvForm(i)) }
+  const saveEdit = (id: string) => {
+    setItems(prev => prev.map(i => i.id !== id ? i : {
+      ...i, name: editForm.name || i.name, sku: editForm.sku || i.sku, category: editForm.category,
+      quantity: Number(editForm.quantity) ?? i.quantity, reorderPoint: Number(editForm.reorderPoint) ?? i.reorderPoint,
+      cost: Number(editForm.cost) ?? i.cost, price: Number(editForm.price) ?? i.price,
+      supplier: editForm.supplier || i.supplier, lastUpdated: new Date().toISOString().slice(0,10),
+    }))
+    setEditingId(null)
+  }
+  const handleAdd = () => {
+    if (!form.name.trim()) return
+    setItems(prev => [...prev, { id: Date.now().toString(), name: form.name, sku: form.sku, category: form.category, quantity: Number(form.quantity) || 0, reorderPoint: Number(form.reorderPoint) || 0, cost: Number(form.cost) || 0, price: Number(form.price) || 0, supplier: form.supplier, lastUpdated: new Date().toISOString().slice(0,10) }])
+    setAddOpen(false); setForm(blankInvForm())
+  }
+  const handleDelete = (id: string) => setItems(prev => prev.filter(i => i.id !== id))
 
   return (
     <div className="space-y-6">
@@ -40,7 +69,7 @@ export default function Inventory() {
         <p className="text-sm text-slate-500">Connect your POS or inventory software, or enter manually</p>
         <div className="flex gap-2">
           <Button variant="secondary" size="sm" icon={<Upload size={14} />}>Import CSV</Button>
-          <Button variant="secondary" size="sm" icon={<RefreshCw size={14} />}>Sync</Button>
+          <Button variant="secondary" size="sm" icon={<RefreshCw size={14} />} onClick={() => setSyncOpen(true)}>Sync POS</Button>
           <Button size="sm" icon={<Plus size={14} />} onClick={() => setAddOpen(true)}>Add Item</Button>
         </div>
       </div>
@@ -56,7 +85,7 @@ export default function Inventory() {
       )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total SKUs" value={inventory.length.toString()} icon={Package} />
+        <StatCard title="Total SKUs" value={items.length.toString()} icon={Package} />
         <StatCard title="Low / Out of Stock" value={`${lowStock.length} items`} icon={AlertTriangle} iconColor="text-amber-500" iconBg="bg-amber-50" alert={lowStock.length > 0} />
         <StatCard title="Out of Stock" value={outOfStock.length.toString()} icon={AlertTriangle} iconColor="text-red-500" iconBg="bg-red-50" alert={outOfStock.length > 0} />
         <StatCard title="Inventory Value" value={`$${totalValue.toLocaleString()}`} icon={Package} iconColor="text-emerald-500" iconBg="bg-emerald-50" />
@@ -79,25 +108,35 @@ export default function Inventory() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-100">
-                {['Item', 'SKU', 'Category', 'Qty', 'Reorder At', 'Cost', 'Price', 'Status', 'Last Updated'].map(h => (
-                  <th key={h} className="text-left px-5 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">{h}</th>
+                {['Item', 'SKU', 'Category', 'Qty', 'Reorder At', 'Cost', 'Price', 'Status', 'Updated', ''].map(h => (
+                  <th key={h} className="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {filtered.map(item => {
                 const status = stockStatus(item)
+                const editing = editingId === item.id
                 return (
-                  <tr key={item.id} className={`border-b border-slate-50 hover:bg-slate-50 transition-colors ${item.quantity === 0 ? 'bg-red-50/30' : item.quantity <= item.reorderPoint ? 'bg-amber-50/30' : ''}`}>
-                    <td className="px-5 py-3 font-medium text-slate-900">{item.name}</td>
-                    <td className="px-5 py-3 text-slate-500 font-mono text-xs">{item.sku}</td>
-                    <td className="px-5 py-3 text-slate-600">{item.category}</td>
-                    <td className={`px-5 py-3 font-semibold ${item.quantity === 0 ? 'text-red-600' : item.quantity <= item.reorderPoint ? 'text-amber-600' : 'text-slate-900'}`}>{item.quantity}</td>
-                    <td className="px-5 py-3 text-slate-500">{item.reorderPoint}</td>
-                    <td className="px-5 py-3 text-slate-700">${item.cost}</td>
-                    <td className="px-5 py-3 text-slate-700">{item.price > 0 ? `$${item.price}` : '—'}</td>
-                    <td className="px-5 py-3"><Badge variant={status.variant}>{status.label}</Badge></td>
-                    <td className="px-5 py-3 text-slate-400 text-xs">{item.lastUpdated}</td>
+                  <tr key={item.id} className={`border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${item.quantity === 0 ? 'bg-red-50/30' : item.quantity <= item.reorderPoint ? 'bg-amber-50/30' : ''}`}>
+                    <td className="px-4 py-2">{editing ? <input value={editForm.name} onChange={e => setEditForm(f=>({...f,name:e.target.value}))} className="w-32 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="font-medium text-slate-900">{item.name}</span>}</td>
+                    <td className="px-4 py-2">{editing ? <input value={editForm.sku} onChange={e => setEditForm(f=>({...f,sku:e.target.value}))} className="w-20 border border-slate-200 rounded px-2 py-1 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-500 font-mono text-xs">{item.sku}</span>}</td>
+                    <td className="px-4 py-2">{editing ? <select value={editForm.category} onChange={e => setEditForm(f=>({...f,category:e.target.value}))} className="border border-slate-200 rounded px-1 py-1 text-xs focus:outline-none"><option>Products</option><option>Supplies</option><option>Services</option><option>Equipment</option><option>Marketing</option></select> : <span className="text-slate-600 text-sm">{item.category}</span>}</td>
+                    <td className="px-4 py-2">{editing ? <input type="number" value={editForm.quantity} onChange={e => setEditForm(f=>({...f,quantity:e.target.value}))} className="w-14 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className={`font-semibold ${item.quantity === 0 ? 'text-red-600' : item.quantity <= item.reorderPoint ? 'text-amber-600' : 'text-slate-900'}`}>{item.quantity}</span>}</td>
+                    <td className="px-4 py-2">{editing ? <input type="number" value={editForm.reorderPoint} onChange={e => setEditForm(f=>({...f,reorderPoint:e.target.value}))} className="w-14 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-500 text-sm">{item.reorderPoint}</span>}</td>
+                    <td className="px-4 py-2">{editing ? <input type="number" value={editForm.cost} onChange={e => setEditForm(f=>({...f,cost:e.target.value}))} className="w-16 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-700 text-sm">${item.cost}</span>}</td>
+                    <td className="px-4 py-2">{editing ? <input type="number" value={editForm.price} onChange={e => setEditForm(f=>({...f,price:e.target.value}))} className="w-16 border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400" /> : <span className="text-slate-700 text-sm">{item.price > 0 ? `$${item.price}` : '—'}</span>}</td>
+                    <td className="px-4 py-2"><Badge variant={status.variant}>{status.label}</Badge></td>
+                    <td className="px-4 py-2 text-slate-400 text-xs">{item.lastUpdated}</td>
+                    <td className="px-3 py-2">
+                      <div className="flex items-center gap-1">
+                        {editing ? (
+                          <><button onClick={() => saveEdit(item.id)} className="text-teal-600 hover:text-teal-700 p-1" title="Save"><Save size={13} /></button><button onClick={() => setEditingId(null)} className="text-slate-400 hover:text-slate-600 p-1" title="Cancel"><X size={13} /></button></>
+                        ) : (
+                          <><button onClick={() => startEdit(item)} className="text-slate-400 hover:text-teal-600 p-1" title="Edit"><Pencil size={12} /></button><button onClick={() => handleDelete(item.id)} className="text-slate-300 hover:text-red-400 p-1" title="Delete"><X size={12} /></button></>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 )
               })}
@@ -133,8 +172,32 @@ export default function Inventory() {
             </div>
           </div>
           <div className="flex gap-3 pt-2">
-            <Button className="flex-1" onClick={() => setAddOpen(false)}>Add Item</Button>
+            <Button className="flex-1" onClick={handleAdd}>Add Item</Button>
             <Button variant="secondary" className="flex-1" onClick={() => setAddOpen(false)}>Cancel</Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Sync POS Modal */}
+      <Modal open={syncOpen} onClose={() => setSyncOpen(false)} title="Sync POS / Inventory Platform">
+        <div className="p-6 space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Platform</label>
+            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+              {['Square','Shopify','Lightspeed','Clover','Toast','Vend','QuickBooks','Other'].map(p => <option key={p}>{p}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">API Key / Access Token</label>
+            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Location / Store ID</label>
+            <input type="text" value={syncForm.locationId} onChange={e => setSyncForm(f => ({ ...f, locationId: e.target.value }))} placeholder="Your location or store ID" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => setSyncOpen(false)}>Cancel</Button>
           </div>
         </div>
       </Modal>

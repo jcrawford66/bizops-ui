@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { DollarSign, TrendingUp, Percent, RefreshCw } from 'lucide-react'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
@@ -7,6 +8,7 @@ import StatCard from '../components/ui/StatCard'
 import Card, { CardHeader, CardBody } from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
+import Modal from '../components/ui/Modal'
 
 const monthly = [
   { month: 'Jan', revenue: 98000, cost: 57000, margin: 41.8 },
@@ -33,11 +35,14 @@ const topProducts = [
 ]
 
 export default function Revenue() {
+  const [syncOpen, setSyncOpen] = useState(false)
+  const [syncForm, setSyncForm] = useState({ platform: 'Square', apiKey: '', locationId: '' })
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <p className="text-sm text-slate-500">Real-time revenue tracking and margin analysis</p>
-        <Button variant="secondary" size="sm" icon={<RefreshCw size={14} />}>Sync Data</Button>
+        <Button variant="secondary" size="sm" icon={<RefreshCw size={14} />} onClick={() => setSyncOpen(true)}>Sync Data</Button>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -142,6 +147,29 @@ export default function Revenue() {
           </table>
         </div>
       </Card>
+
+      <Modal open={syncOpen} onClose={() => setSyncOpen(false)} title="Sync Revenue Data">
+        <div className="p-6 space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Platform</label>
+            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+              {['Square','Stripe','Shopify','QuickBooks','PayPal','Clover','Toast','Other'].map(p => <option key={p}>{p}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">API Key / Secret Key</label>
+            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Location / Account ID</label>
+            <input type="text" value={syncForm.locationId} onChange={e => setSyncForm(f => ({ ...f, locationId: e.target.value }))} placeholder="Your location or account ID" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => setSyncOpen(false)}>Cancel</Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

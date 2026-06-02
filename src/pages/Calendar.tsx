@@ -36,6 +36,8 @@ export default function Calendar() {
   const [addOpen, setAddOpen] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [form, setForm] = useState({ title: '', date: '', time: '', type: 'appointment', customer: '', notes: '' })
+  const [syncOpen, setSyncOpen] = useState(false)
+  const [syncForm, setSyncForm] = useState({ platform: 'Google Calendar', apiKey: '', calendarId: '' })
 
   const days = getDaysInMonth(current.year, current.month)
   const firstDay = getFirstDayOfMonth(current.year, current.month)
@@ -59,7 +61,7 @@ export default function Calendar() {
       <div className="flex items-center justify-between">
         <p className="text-sm text-slate-500">Connect your booking or calendar app for real-time sync</p>
         <div className="flex gap-2">
-          <Button variant="secondary" size="sm" icon={<Link2 size={14} />}>Connect Calendar</Button>
+          <Button variant="secondary" size="sm" icon={<Link2 size={14} />} onClick={() => setSyncOpen(true)}>Connect Calendar</Button>
           <Button size="sm" icon={<Plus size={14} />} onClick={() => setAddOpen(true)}>Add Event</Button>
         </div>
       </div>
@@ -182,6 +184,30 @@ export default function Calendar() {
           <div className="flex gap-3">
             <Button className="flex-1" onClick={() => setAddOpen(false)}>Save Event</Button>
             <Button variant="secondary" className="flex-1" onClick={() => setAddOpen(false)}>Cancel</Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Connect Calendar Modal */}
+      <Modal open={syncOpen} onClose={() => setSyncOpen(false)} title="Connect Calendar / Booking Platform">
+        <div className="p-6 space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Platform</label>
+            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+              {['Google Calendar','Outlook / Microsoft 365','Acuity Scheduling','Calendly','Mindbody','Jobber','ServiceTitan','Other'].map(p => <option key={p}>{p}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">API Key / OAuth Token</label>
+            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your token or API key" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Calendar / Account ID</label>
+            <input type="text" value={syncForm.calendarId} onChange={e => setSyncForm(f => ({ ...f, calendarId: e.target.value }))} placeholder="e.g. primary or your@email.com" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400" />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => setSyncOpen(false)}>Cancel</Button>
           </div>
         </div>
       </Modal>
