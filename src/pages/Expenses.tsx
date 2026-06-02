@@ -9,7 +9,7 @@ import Modal from '../components/ui/Modal'
 import { useBusinessData } from '../context/BusinessDataContext'
 import type { ExpenseItem } from '../types'
 
-const CATEGORIES = ['Payroll','COGS','Facilities','Marketing','Supplies','Software','Utilities','Other']
+const CATEGORIES = ['Payroll','COGS','Facilities','Marketing','Supplies','Software','Utilities','Insurance','Rent / Lease','Equipment','Professional Services','Travel & Mileage','Meals & Entertainment','Subscriptions','Taxes & Licenses','Other']
 const STATUS_BADGE: Record<string, 'success' | 'warning' | 'error'> = { paid: 'success', pending: 'warning', overdue: 'error' }
 
 type EditForm = {
@@ -38,6 +38,7 @@ export default function Expenses() {
   const [editForm, setEditForm] = useState<EditForm>(blankForm())
   const [addOpen, setAddOpen] = useState(false)
   const [addForm, setAddForm] = useState<EditForm>(blankForm())
+  const [addCustomCategory, setAddCustomCategory] = useState('')
   const [syncOpen, setSyncOpen] = useState(false)
   const [syncForm, setSyncForm] = useState({ platform: 'QuickBooks', apiKey: '', companyId: '' })
 
@@ -61,9 +62,12 @@ export default function Expenses() {
 
   const handleAdd = () => {
     if (!addForm.vendor.trim() || !addForm.amount) return
+    const resolvedCategory = addForm.category === 'Other' && addCustomCategory.trim()
+      ? addCustomCategory.trim()
+      : addForm.category
     addExpense({
       vendor: addForm.vendor,
-      category: addForm.category,
+      category: resolvedCategory,
       amount: Number(addForm.amount),
       date: addForm.date || new Date().toISOString().slice(0, 10),
       status: addForm.status as ExpenseItem['status'],
@@ -72,6 +76,7 @@ export default function Expenses() {
     })
     setAddOpen(false)
     setAddForm(blankForm())
+    setAddCustomCategory('')
   }
 
   return (
@@ -258,9 +263,23 @@ export default function Expenses() {
             ))}
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1">Category</label>
-              <select value={addForm.category} onChange={e => setAddForm(f => ({ ...f, category: e.target.value }))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
+              <select value={addForm.category} onChange={e => { setAddForm(f => ({ ...f, category: e.target.value })); setAddCustomCategory('') }} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
                 {CATEGORIES.map(c => <option key={c}>{c}</option>)}
               </select>
+              {addForm.category === 'Other' && (
+                <div className="mt-2">
+                  <label className="block text-xs font-medium text-slate-400 mb-1">
+                    Expense Name / Type <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={addCustomCategory}
+                    onChange={e => setAddCustomCategory(e.target.value)}
+                    placeholder="e.g. Vehicle Repair, Licensing Fee, Donation…"
+                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500"
+                  />
+                </div>
+              )}
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1">Status</label>
