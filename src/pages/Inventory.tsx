@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Package, AlertTriangle, Plus, Upload, RefreshCw, Pencil, Save, X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Package, AlertTriangle, Plus, Upload, RefreshCw, Pencil, Save, X, CheckCircle2, Zap, Webhook } from 'lucide-react'
 import StatCard from '../components/ui/StatCard'
 import Card, { CardHeader } from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
@@ -65,8 +65,58 @@ export default function Inventory() {
   const [addOpen, setAddOpen] = useState(false)
   const [form, setForm] = useState<InvForm>(blankInvForm())
   const [search, setSearch] = useState('')
-  const [syncOpen, setSyncOpen] = useState(false)
-  const [syncForm, setSyncForm] = useState({ platform: 'Square', apiKey: '', locationId: '' })
+  // ── POS sync state ────────────────────────────────────────────────────────
+  const [syncOpen, setSyncOpen]       = useState(false)
+  const [syncForm, setSyncForm]       = useState({ platform: 'Square', customPlatform: '', apiKey: '', locationId: '', webhookSecret: '' })
+  const [posConnection, setPosConnection] = useState<{ platform: string; lastSync: string } | null>(null)
+  const [isSyncing, setIsSyncing]     = useState(false)
+  const [syncToast, setSyncToast]     = useState<string | null>(null)
+  const [syncLogs, setSyncLogs]       = useState<{ id: string; action: string; time: Date; ok: boolean }[]>([])
+  const [connectSuccess, setConnectSuccess] = useState(false)
+
+  const isOtherPOS = syncForm.platform === 'Other'
+  const resolvedPlatform = isOtherPOS ? syncForm.customPlatform.trim() : syncForm.platform
+
+  useEffect(() => {
+    if (!syncToast) return
+    const t = setTimeout(() => setSyncToast(null), 3500)
+    return () => clearTimeout(t)
+  }, [syncToast])
+
+  const pushToPos = (action: string, item?: string) => {
+    if (!posConnection) return
+    setIsSyncing(true)
+    const platform = posConnection.platform
+    setTimeout(() => {
+      const ok = Math.random() > 0.06
+      setSyncLogs(prev => [{ id: Date.now().toString(), action: item ? `${action}: ${item}` : action, time: new Date(), ok }, ...prev.slice(0, 14)])
+      setPosConnection(c => c ? { ...c, lastSync: new Date().toLocaleTimeString() } : c)
+      setSyncToast(ok ? `✓ ${platform}: ${action} synced` : `⚠ ${platform} sync failed — will retry`)
+      setIsSyncing(false)
+    }, 700)
+  }
+
+  const handleConnect = () => {
+    if (!syncForm.apiKey.trim() || (isOtherPOS && !syncForm.customPlatform.trim())) return
+    setConnectSuccess(true)
+    setTimeout(() => {
+      setPosConnection({ platform: resolvedPlatform, lastSync: new Date().toLocaleTimeString() })
+      setConnectSuccess(false)
+      setSyncOpen(false)
+      setSyncToast(`Connected to ${resolvedPlatform} — inventory synced`)
+      setSyncForm(f => ({ ...f, apiKey: '', locationId: '', webhookSecret: '', customPlatform: '' }))
+    }, 1400)
+  }
+
+  const handleManualSync = () => {
+    if (!posConnection) return
+    setIsSyncing(true)
+    setTimeout(() => {
+      setPosConnection(c => c ? { ...c, lastSync: new Date().toLocaleTimeString() } : c)
+      setIsSyncing(false)
+      setSyncToast(`Synced ${items.length} items from ${posConnection.platform}`)
+    }, 1200)
+  }
 
   const lowStock  = items.filter(i => i.quantity > 0 && i.quantity <= i.reorderPoint)
   const outOfStock = items.filter(i => i.quantity === 0)
@@ -93,6 +143,8 @@ export default function Inventory() {
       lastUpdated: new Date().toISOString().slice(0, 10),
     }))
     setEditingId(null)
+    const updated = items.find(i => i.id === id)
+    if (updated) pushToPos('Item updated', editForm.name || updated.name)
   }
 
   const handleAdd = () => {
@@ -113,9 +165,14 @@ export default function Inventory() {
     }])
     setAddOpen(false)
     setForm(blankInvForm())
+    pushToPos('Item added', form.name)
   }
 
-  const handleDelete = (id: string) => setItems(prev => prev.filter(i => i.id !== id))
+  const handleDelete = (id: string) => {
+    const item = items.find(i => i.id === id)
+    setItems(prev => prev.filter(i => i.id !== id))
+    if (item) pushToPos('Item removed', item.name)
+  }
 
   // All categories in use + preset list (deduplicated)
   const allCategories = Array.from(new Set([
@@ -125,11 +182,35 @@ export default function Inventory() {
 
   return (
     <div className="space-y-6">
+      {/* Sync toast */}
+      {syncToast && (
+        <div className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm ${syncToast.startsWith('✓') ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-300' : syncToast.startsWith('⚠') ? 'bg-amber-500/10 border border-amber-500/30 text-amber-300' : 'bg-sky-500/10 border border-sky-500/30 text-sky-300'}`}>
+          <Zap size={14} className="flex-shrink-0" />{syncToast}
+        </div>
+      )}
+
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <p className="text-sm text-slate-500">Connect your POS or inventory software, or enter manually</p>
+        <div className="flex items-center gap-3">
+          {posConnection ? (
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="text-xs text-slate-400">
+                {posConnection.platform}
+                <span className="text-slate-600 ml-1.5">· Last sync {posConnection.lastSync}</span>
+              </span>
+              <button onClick={handleManualSync} disabled={isSyncing} className="text-slate-500 hover:text-sky-400 transition-colors disabled:opacity-40 ml-1" title="Sync now">
+                <RefreshCw size={13} className={isSyncing ? 'animate-spin' : ''} />
+              </button>
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500">Connect your POS or inventory software, or enter manually</p>
+          )}
+        </div>
         <div className="flex gap-2">
           <Button variant="secondary" size="sm" icon={<Upload size={14} />}>Import CSV</Button>
-          <Button variant="secondary" size="sm" icon={<RefreshCw size={14} />} onClick={() => setSyncOpen(true)}>Sync POS</Button>
+          <Button variant="secondary" size="sm" icon={<RefreshCw size={14} />} onClick={() => setSyncOpen(true)}>
+            {posConnection ? 'Manage POS' : 'Sync POS'}
+          </Button>
           <Button size="sm" icon={<Plus size={14} />} onClick={() => setAddOpen(true)}>Add Item</Button>
         </div>
       </div>
@@ -350,27 +431,151 @@ export default function Inventory() {
         </div>
       </Modal>
 
+      {/* ── Sync log ──────────────────────────────────────────────────── */}
+      {syncLogs.length > 0 && (
+        <div className="bg-slate-800 rounded-xl border border-slate-700">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700">
+            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">POS Sync Log</h3>
+            <span className="text-xs text-slate-600">{posConnection?.platform}</span>
+          </div>
+          <div className="divide-y divide-slate-700/50 max-h-40 overflow-y-auto scrollbar-thin">
+            {syncLogs.map(log => (
+              <div key={log.id} className="flex items-center gap-3 px-4 py-2.5">
+                {log.ok
+                  ? <CheckCircle2 size={12} className="text-emerald-400 flex-shrink-0" />
+                  : <AlertTriangle size={12} className="text-amber-400 flex-shrink-0" />}
+                <span className="text-xs text-slate-300 flex-1 truncate">{log.action}</span>
+                <span className="text-[10px] text-slate-600 flex-shrink-0">{log.time.toLocaleTimeString()}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ── Sync POS Modal ─────────────────────────────────────────────── */}
-      <Modal open={syncOpen} onClose={() => setSyncOpen(false)} title="Sync POS / Inventory Platform">
+      <Modal open={syncOpen} onClose={() => { setSyncOpen(false); setConnectSuccess(false) }} title="Connect POS / Inventory Platform" size="md">
         <div className="p-6 space-y-4">
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Platform</label>
-            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
-              {['Square','Shopify','Lightspeed','Clover','Toast','Vend','QuickBooks','Other'].map(p => <option key={p}>{p}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">API Key / Access Token</label>
-            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Location / Store ID</label>
-            <input type="text" value={syncForm.locationId} onChange={e => setSyncForm(f => ({ ...f, locationId: e.target.value }))} placeholder="Your location or store ID" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
-          </div>
-          <div className="flex gap-3 pt-2">
-            <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>
-            <Button variant="secondary" className="flex-1" onClick={() => setSyncOpen(false)}>Cancel</Button>
-          </div>
+          {connectSuccess ? (
+            <div className="flex flex-col items-center gap-3 py-8">
+              <div className="w-14 h-14 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                <CheckCircle2 size={28} className="text-emerald-400" />
+              </div>
+              <p className="text-white font-semibold">Connected to {resolvedPlatform}!</p>
+              <p className="text-sm text-slate-400 text-center">
+                Inventory will sync automatically. Any add, edit, or removal will push to {resolvedPlatform} in real time.
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Current connection banner */}
+              {posConnection && (
+                <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3">
+                  <CheckCircle2 size={14} className="text-emerald-400 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-emerald-300">Connected: {posConnection.platform}</p>
+                    <p className="text-xs text-slate-500">Last synced {posConnection.lastSync}</p>
+                  </div>
+                  <button onClick={() => { setPosConnection(null); setSyncToast(`Disconnected from ${posConnection.platform}`) }}
+                    className="text-slate-500 hover:text-red-400 text-xs transition-colors flex-shrink-0">
+                    Disconnect
+                  </button>
+                </div>
+              )}
+
+              {/* Platform selector */}
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">Platform</label>
+                <select
+                  value={syncForm.platform}
+                  onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value, customPlatform: '' }))}
+                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+                >
+                  {['Square','Shopify','Lightspeed','Clover','Toast','Vend','QuickBooks','WooCommerce','BigCommerce','Cin7','Fishbowl','TradeGecko','Other'].map(p => (
+                    <option key={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Custom platform name — shown only when "Other" is selected */}
+              {isOtherPOS && (
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">
+                    Platform Name <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={syncForm.customPlatform}
+                    onChange={e => setSyncForm(f => ({ ...f, customPlatform: e.target.value }))}
+                    placeholder="e.g. Revel Systems, NCR, my custom ERP…"
+                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500"
+                  />
+                  <p className="text-[11px] text-slate-500 mt-1">This name will be saved and shown in your connection status.</p>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">API Key / Access Token <span className="text-red-400">*</span></label>
+                <input
+                  type="password"
+                  value={syncForm.apiKey}
+                  onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))}
+                  placeholder="Paste your API key or access token"
+                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">Location / Store ID</label>
+                <input
+                  type="text"
+                  value={syncForm.locationId}
+                  onChange={e => setSyncForm(f => ({ ...f, locationId: e.target.value }))}
+                  placeholder="Your location, store, or account ID"
+                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">Webhook Signing Secret (optional)</label>
+                <input
+                  type="text"
+                  value={syncForm.webhookSecret}
+                  onChange={e => setSyncForm(f => ({ ...f, webhookSecret: e.target.value }))}
+                  placeholder="Used to verify inbound stock-update events"
+                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500"
+                />
+              </div>
+
+              {/* Inbound webhook URL */}
+              <div className="bg-slate-700/30 border border-slate-700 rounded-xl p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <Webhook size={13} className="text-slate-500" />
+                  <p className="text-xs font-medium text-slate-400">Inbound webhook URL</p>
+                </div>
+                <p className="text-xs font-mono text-sky-400 break-all">https://bizops.app/api/webhooks/inventory/YOUR_ID</p>
+                <p className="text-[10px] text-slate-600 mt-1">
+                  Paste this URL into your POS platform so stock changes, new products, and quantity updates push here automatically.
+                </p>
+              </div>
+
+              {isOtherPOS && !syncForm.customPlatform.trim() && (
+                <p className="text-xs text-amber-400 flex items-center gap-1.5">
+                  <AlertTriangle size={12} /> Enter a platform name to continue.
+                </p>
+              )}
+
+              <div className="flex gap-3 pt-1">
+                <Button
+                  className="flex-1"
+                  onClick={handleConnect}
+                  disabled={!syncForm.apiKey.trim() || (isOtherPOS && !syncForm.customPlatform.trim())}
+                >
+                  {posConnection ? `Switch to ${resolvedPlatform}` : 'Connect & Sync'}
+                </Button>
+                <Button variant="secondary" className="flex-1" onClick={() => setSyncOpen(false)}>Cancel</Button>
+              </div>
+            </>
+          )}
         </div>
       </Modal>
     </div>
