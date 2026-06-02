@@ -1,3 +1,4 @@
+import { useBusinessData } from '../context/BusinessDataContext'
 import { DollarSign, TrendingUp, Users, Package, AlertTriangle, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
@@ -36,6 +37,7 @@ const TYPE_DOT: Record<string, string> = {
 
 export default function Dashboard() {
   const { alerts } = useApp()
+  const { metrics } = useBusinessData()
   const unread = alerts.filter(a => !a.read)
 
   return (
@@ -53,8 +55,8 @@ export default function Dashboard() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Revenue (MTD)" value="$142,500" change={8.3} changeLabel="vs last month" icon={DollarSign} />
-        <StatCard title="Gross Margin" value="42.3%" change={-1.2} changeLabel="vs last month" icon={TrendingUp} iconColor="text-emerald-500" iconBg="bg-emerald-500/15" />
+        <StatCard title="Revenue (MTD)" value={`$${metrics.revenue.toLocaleString()}`} change={8.3} changeLabel="vs last month" icon={DollarSign} />
+        <StatCard title="Gross Margin" value={`${metrics.grossMarginPct.toFixed(1)}%`} change={-1.2} changeLabel="vs last month" icon={TrendingUp} iconColor="text-emerald-500" iconBg="bg-emerald-500/15" />
         <StatCard title="Active Customers" value="342" change={5.1} changeLabel="vs last month" icon={Users} iconColor="text-blue-500" iconBg="bg-blue-500/15" />
         <StatCard title="Inventory Alerts" value="14 items" icon={Package} iconColor="text-amber-500" iconBg="bg-amber-500/15" alert />
       </div>

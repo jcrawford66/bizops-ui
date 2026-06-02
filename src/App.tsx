@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AppProvider } from './context/AppContext'
+import { BusinessDataProvider } from './context/BusinessDataContext'
 import Layout from './components/layout/Layout'
 import Dashboard from './pages/Dashboard'
 import Revenue from './pages/Revenue'
@@ -15,6 +16,7 @@ import Settings from './pages/Settings'
 export default function App() {
   return (
     <BrowserRouter>
+      <BusinessDataProvider>
       <AppProvider>
         <Routes>
           <Route element={<Layout />}>
@@ -31,6 +33,7 @@ export default function App() {
           </Route>
         </Routes>
       </AppProvider>
+      </BusinessDataProvider>
     </BrowserRouter>
   )
 }
