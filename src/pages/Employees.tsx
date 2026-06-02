@@ -3,6 +3,8 @@ import { Users2, Clock, CheckCircle, DollarSign, Pencil, Save, X, Plus, RefreshC
 import {
   RadialBarChart, RadialBar, ResponsiveContainer, Tooltip,
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  RadarChart, Radar, PolarGrid, PolarAngleAxis,
+  PieChart, Pie, Cell,
 } from 'recharts'
 import StatCard from '../components/ui/StatCard'
 import Card, { CardHeader, CardBody } from '../components/ui/Card'
@@ -43,6 +45,8 @@ export default function Employees() {
   const [editForm, setEditForm] = useState<EditForm>(blankForm())
   const [addOpen, setAddOpen] = useState(false)
   const [addForm, setAddForm] = useState<EditForm>(blankForm())
+  type ChartType = 'radial' | 'bar' | 'radar' | 'donut'
+  const [chartType, setChartType] = useState<ChartType>('radial')
   const [syncOpen, setSyncOpen] = useState(false)
   const [syncForm, setSyncForm] = useState({ platform: 'Gusto', customPlatform: '', apiKey: '', endpoint: '' })
 
@@ -198,36 +202,97 @@ export default function Employees() {
           </div>
         </Card>
 
-        {/* Circular efficiency chart */}
+        {/* Efficiency chart — switchable format */}
         <Card>
           <CardHeader>
-            <h3 className="font-semibold text-white text-sm">Efficiency Scores</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Each ring = one team member</p>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h3 className="font-semibold text-white text-sm">Efficiency Scores</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {chartType === 'radial' && 'Radial rings — one per team member'}
+                  {chartType === 'bar'    && 'Horizontal bars — easy side-by-side comparison'}
+                  {chartType === 'radar'  && 'Spider / radar — overall shape at a glance'}
+                  {chartType === 'donut'  && 'Donut — proportional share of total efficiency'}
+                </p>
+              </div>
+              {/* Chart type picker */}
+              <div className="flex items-center gap-1 flex-shrink-0">
+                {([
+                  { id: 'radial', label: 'Radial'  },
+                  { id: 'bar',    label: 'Bar'     },
+                  { id: 'radar',  label: 'Radar'   },
+                  { id: 'donut',  label: 'Donut'   },
+                ] as { id: ChartType; label: string }[]).map(opt => (
+                  <button
+                    key={opt.id}
+                    onClick={() => setChartType(opt.id)}
+                    className={`px-2.5 py-1 text-[11px] font-medium rounded-lg transition-colors ${
+                      chartType === opt.id
+                        ? 'bg-accent text-white'
+                        : 'text-slate-500 hover:text-slate-300 hover:bg-slate-700'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </CardHeader>
           <CardBody className="pb-2">
             <ResponsiveContainer width="100%" height={220}>
-              <RadialBarChart
-                cx="50%" cy="50%"
-                innerRadius="20%"
-                outerRadius="90%"
-                data={radialData}
-                startAngle={90}
-                endAngle={-270}
-              >
-                <RadialBar
-                  dataKey="efficiency"
-                  cornerRadius={4}
-                  background={{ fill: '#f1f5f9' }}
-                  label={false}
-                />
-                <Tooltip
-                  formatter={(v: unknown) => [`${v as number}%`, 'Efficiency']}
-                  contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }}
-                />
-              </RadialBarChart>
+              <>
+                {/* ── Radial rings ── */}
+                {chartType === 'radial' && (
+                  <RadialBarChart cx="50%" cy="50%" innerRadius="20%" outerRadius="90%" data={radialData} startAngle={90} endAngle={-270}>
+                    <RadialBar dataKey="efficiency" cornerRadius={4} background={{ fill: '#1e293b' }} label={false} />
+                    <Tooltip formatter={(v: unknown) => [`${v as number}%`, 'Efficiency']} contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }} />
+                  </RadialBarChart>
+                )}
+
+                {/* ── Horizontal bar ── */}
+                {chartType === 'bar' && (
+                  <BarChart data={[...radialData].reverse()} layout="vertical" barSize={12}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1e3a4a" horizontal={false} />
+                    <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={52} />
+                    <Tooltip formatter={(v: unknown) => [`${v as number}%`, 'Efficiency']} contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }} />
+                    <Bar dataKey="efficiency" radius={[0, 6, 6, 0]}>
+                      {radialData.map((d, i) => <Cell key={i} fill={d.fill} />)}
+                    </Bar>
+                  </BarChart>
+                )}
+
+                {/* ── Radar / spider ── */}
+                {chartType === 'radar' && (
+                  <RadarChart data={[
+                    { metric: 'Efficiency', ...Object.fromEntries(radialData.map(d => [d.name, d.efficiency])) },
+                    { metric: 'Tasks',      ...Object.fromEntries(employees.map(e => [e.name.split(' ')[0], Math.min(100, (e.tasksCompleted / 70) * 100)])) },
+                    { metric: 'Hours',      ...Object.fromEntries(employees.map(e => [e.name.split(' ')[0], Math.min(100, (e.hoursLogged / 180) * 100)])) },
+                    { metric: 'Revenue',    ...Object.fromEntries(employees.map(e => [e.name.split(' ')[0], Math.min(100, (e.revenue / 40000) * 100)])) },
+                  ]}>
+                    <PolarGrid stroke="#1e3a4a" />
+                    <PolarAngleAxis dataKey="metric" tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                    {radialData.slice(0, 4).map((d, i) => (
+                      <Radar key={i} name={d.name} dataKey={d.name} stroke={d.fill} fill={d.fill} fillOpacity={0.15} strokeWidth={1.5} />
+                    ))}
+                    <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }} />
+                  </RadarChart>
+                )}
+
+                {/* ── Donut ── */}
+                {chartType === 'donut' && (
+                  <PieChart>
+                    <Pie data={radialData} cx="50%" cy="50%" innerRadius={55} outerRadius={90} dataKey="efficiency" paddingAngle={3} label={({ name, value }) => `${name} ${value}%`} labelLine={false}>
+                      {radialData.map((d, i) => <Cell key={i} fill={d.fill} />)}
+                    </Pie>
+                    <Tooltip formatter={(v: unknown) => [`${v as number}%`, 'Efficiency']} contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }} />
+                  </PieChart>
+                )}
+              </>
             </ResponsiveContainer>
-            {/* Legend */}
-            <div className="space-y-1.5 mt-1">
+
+            {/* Legend — shown for all chart types */}
+            <div className="space-y-1.5 mt-2">
               {radialData.map((d, i) => (
                 <div key={i} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
