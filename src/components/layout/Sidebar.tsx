@@ -26,7 +26,7 @@ export default function Sidebar() {
     <aside className={`fixed left-0 top-0 h-screen bg-slate-900 flex flex-col transition-all duration-300 z-40 ${sidebarCollapsed ? 'w-16' : 'w-60'}`}>
       {/* Logo */}
       <div className={`flex items-center gap-3 px-4 py-5 border-b border-slate-700/60 ${sidebarCollapsed ? 'justify-center' : ''}`}>
-        <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center flex-shrink-0">
+        <div className="w-8 h-8 bg-sky-500 rounded-lg flex items-center justify-center flex-shrink-0">
           <Zap size={16} className="text-white" />
         </div>
         {!sidebarCollapsed && (
@@ -44,7 +44,7 @@ export default function Sidebar() {
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-sm transition-colors group ${
                 isActive
-                  ? 'bg-brand-500 text-white'
+                  ? 'bg-sky-500 text-white'
                   : 'text-slate-400 hover:bg-slate-800 hover:text-white'
               } ${sidebarCollapsed ? 'justify-center' : ''}`
             }

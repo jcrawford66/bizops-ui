@@ -10,17 +10,17 @@ const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 const events: CalendarEvent[] = [
   { id: '1', title: 'Michael Torres — Service', start: '2025-06-10T09:00', end: '2025-06-10T10:30', type: 'appointment', customer: 'Michael Torres', color: 'bg-blue-500' },
-  { id: '2', title: 'Team Standup', start: '2025-06-10T10:00', end: '2025-06-10T10:30', type: 'meeting', color: 'bg-purple-500' },
+  { id: '2', title: 'Team Standup', start: '2025-06-10T10:00', end: '2025-06-10T10:30', type: 'meeting', color: 'bg-sky-500' },
   { id: '3', title: 'Acme Corp — Quarterly Review', start: '2025-06-11T14:00', end: '2025-06-11T15:00', type: 'meeting', customer: 'Acme Corporation', color: 'bg-emerald-500' },
   { id: '4', title: 'Blue Ridge Roofing — Install', start: '2025-06-12T08:00', end: '2025-06-12T12:00', type: 'appointment', customer: 'Blue Ridge Roofing', color: 'bg-blue-500' },
   { id: '5', title: 'Riverdale Bakery — Onboarding', start: '2025-06-13T11:00', end: '2025-06-13T12:00', type: 'appointment', customer: 'Riverdale Bakery', color: 'bg-blue-500' },
   { id: '6', title: 'Invoice Follow-ups', start: '2025-06-13T15:00', end: '2025-06-13T16:00', type: 'task', color: 'bg-amber-500' },
   { id: '7', title: 'Sandra Wei — Re-engagement Call', start: '2025-06-16T10:30', end: '2025-06-16T11:00', type: 'appointment', customer: 'Sandra Wei', color: 'bg-orange-400' },
-  { id: '8', title: 'Staff Training Session', start: '2025-06-17T09:00', end: '2025-06-17T11:00', type: 'meeting', color: 'bg-purple-500' },
+  { id: '8', title: 'Staff Training Session', start: '2025-06-17T09:00', end: '2025-06-17T11:00', type: 'meeting', color: 'bg-sky-500' },
 ]
 
 const TYPE_VARIANT: Record<string, 'info' | 'purple' | 'warning' | 'default'> = {
-  appointment: 'info', meeting: 'purple', task: 'warning', reminder: 'default',
+  appointment: 'info', meeting: 'info', task: 'warning', reminder: 'default',
 }
 
 function getDaysInMonth(year: number, month: number) {
@@ -91,8 +91,8 @@ export default function Calendar() {
                 const dayEvents = eventsForDay(day)
                 const isToday = day === today.getDate() && current.month === today.getMonth() && current.year === today.getFullYear()
                 return (
-                  <div key={day} className={`min-h-[72px] p-1 rounded-lg border transition-colors ${isToday ? 'border-brand-500 bg-brand-500/10' : 'border-transparent hover:bg-slate-700/40'}`}>
-                    <span className={`text-xs font-medium block mb-1 w-5 h-5 flex items-center justify-center rounded-full ${isToday ? 'bg-brand-500/100 text-white' : 'text-slate-500'}`}>
+                  <div key={day} className={`min-h-[72px] p-1 rounded-lg border transition-colors ${isToday ? 'border-brand-500 bg-sky-500/10' : 'border-transparent hover:bg-slate-700/40'}`}>
+                    <span className={`text-xs font-medium block mb-1 w-5 h-5 flex items-center justify-center rounded-full ${isToday ? 'bg-sky-500/100 text-white' : 'text-slate-500'}`}>
                       {day}
                     </span>
                     <div className="space-y-0.5">
@@ -172,12 +172,12 @@ export default function Calendar() {
           {[{ label: 'Title', key: 'title' }, { label: 'Customer (optional)', key: 'customer' }, { label: 'Date', key: 'date', type: 'date' }, { label: 'Time', key: 'time', type: 'time' }].map(({ label, key, type = 'text' }) => (
             <div key={key}>
               <label className="block text-xs font-medium text-slate-400 mb-1">{label}</label>
-              <input type={type} value={form[key as keyof typeof form]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+              <input type={type} value={form[key as keyof typeof form]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
             </div>
           ))}
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Type</label>
-            <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
+            <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
               {['appointment', 'meeting', 'task', 'reminder'].map(t => <option key={t}>{t}</option>)}
             </select>
           </div>
@@ -193,17 +193,17 @@ export default function Calendar() {
         <div className="p-6 space-y-4">
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Platform</label>
-            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
+            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
               {['Google Calendar','Outlook / Microsoft 365','Acuity Scheduling','Calendly','Mindbody','Jobber','ServiceTitan','Other'].map(p => <option key={p}>{p}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">API Key / OAuth Token</label>
-            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your token or API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your token or API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Calendar / Account ID</label>
-            <input type="text" value={syncForm.calendarId} onChange={e => setSyncForm(f => ({ ...f, calendarId: e.target.value }))} placeholder="e.g. primary or your@email.com" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+            <input type="text" value={syncForm.calendarId} onChange={e => setSyncForm(f => ({ ...f, calendarId: e.target.value }))} placeholder="e.g. primary or your@email.com" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
           </div>
           <div className="flex gap-3 pt-2">
             <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>

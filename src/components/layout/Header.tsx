@@ -48,7 +48,7 @@ export default function Header({ title }: { title: string }) {
               <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700">
                 <span className="font-semibold text-sm text-white">Notifications</span>
                 <div className="flex items-center gap-2">
-                  <button onClick={clearAlerts} className="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1">
+                  <button onClick={clearAlerts} className="text-xs text-sky-400 hover:text-sky-300 flex items-center gap-1">
                     <CheckCheck size={13} /> Mark all read
                   </button>
                   <button onClick={() => setAlertsOpen(false)} className="text-slate-500 hover:text-slate-300">
@@ -83,12 +83,12 @@ export default function Header({ title }: { title: string }) {
         {/* Chat */}
         <button
           onClick={() => setChatOpen(!chatOpen)}
-          className={`p-2 rounded-lg transition-colors ${chatOpen ? 'bg-brand-500 text-white' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'}`}
+          className={`p-2 rounded-lg transition-colors ${chatOpen ? 'bg-sky-500 text-white' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'}`}
         >
           <MessageSquare size={18} />
         </button>
 
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white text-xs font-bold ml-1">
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white text-xs font-bold ml-1">
           JD
         </div>
       </div>

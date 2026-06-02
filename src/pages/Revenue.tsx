@@ -27,7 +27,7 @@ const byCategory = [
 const STATUS_COLORS: Record<LiveTicket['status'], string> = {
   open:             'bg-blue-500/20 text-blue-300 border-blue-500/30',
   in_progress:      'bg-amber-500/20 text-amber-300 border-amber-500/30',
-  pending_approval: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+  pending_approval: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
   completed:        'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
 }
 const STATUS_LABELS: Record<LiveTicket['status'], string> = {
@@ -127,9 +127,9 @@ export default function Revenue() {
     <div className="space-y-6">
       {/* Webhook event toast */}
       {lastWebhookEvent && (
-        <div className="flex items-center gap-3 bg-brand-500/15 border border-brand-500/30 rounded-xl p-3 animate-pulse">
-          <Zap size={15} className="text-brand-400 flex-shrink-0" />
-          <p className="text-sm text-brand-300">{lastWebhookEvent}</p>
+        <div className="flex items-center gap-3 bg-sky-500/15 border border-sky-500/30 rounded-xl p-3 animate-pulse">
+          <Zap size={15} className="text-sky-400 flex-shrink-0" />
+          <p className="text-sm text-sky-300">{lastWebhookEvent}</p>
         </div>
       )}
 
@@ -137,7 +137,7 @@ export default function Revenue() {
         <p className="text-sm text-slate-500">Live revenue, ticket margin tracking, and expense-linked profitability</p>
         <div className="flex items-center gap-2 flex-wrap">
           {connectedPlatforms.filter(p => p.type === 'revenue').map(p => (
-            <div key={p.id} className="flex items-center gap-1.5 bg-brand-500/10 border border-brand-500/30 rounded-full px-3 py-1 text-xs text-brand-400">
+            <div key={p.id} className="flex items-center gap-1.5 bg-sky-500/10 border border-sky-500/30 rounded-full px-3 py-1 text-xs text-sky-400">
               <CheckCircle2 size={11} /> {p.name}
               <button onClick={() => removeConnectedPlatform(p.id)} className="hover:text-red-400 ml-1">✕</button>
             </div>
@@ -150,7 +150,7 @@ export default function Revenue() {
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard title="Revenue (MTD)" value={`$${metrics.revenue.toLocaleString()}`} change={8.3} changeLabel="vs last mo" icon={DollarSign} />
         <StatCard title="Gross Profit" value={`$${metrics.grossProfit.toLocaleString()}`} change={6.1} icon={TrendingUp} iconColor="text-emerald-400" iconBg="bg-emerald-500/15" />
-        <StatCard title="Gross Margin" value={`${metrics.grossMarginPct.toFixed(1)}%`} icon={Percent} iconColor={metrics.grossMarginPct < 30 ? 'text-red-400' : 'text-brand-400'} iconBg={metrics.grossMarginPct < 30 ? 'bg-red-500/15' : 'bg-brand-500/15'} alert={metrics.grossMarginPct < 30} />
+        <StatCard title="Gross Margin" value={`${metrics.grossMarginPct.toFixed(1)}%`} icon={Percent} iconColor={metrics.grossMarginPct < 30 ? 'text-red-400' : 'text-sky-400'} iconBg={metrics.grossMarginPct < 30 ? 'bg-red-500/15' : 'bg-sky-500/15'} alert={metrics.grossMarginPct < 30} />
         <StatCard title="Net Margin" value={`${metrics.netMarginPct.toFixed(1)}%`} icon={Percent} iconColor={metrics.netMarginPct < 10 ? 'text-red-400' : 'text-blue-400'} iconBg={metrics.netMarginPct < 10 ? 'bg-red-500/15' : 'bg-blue-500/15'} />
         {/* ── MIN REQUIRED MARGIN — live calc ── */}
         <div className={`bg-slate-800 rounded-xl border shadow-sm p-5 ${metrics.grossMarginPct < metrics.minRequiredMarginPct ? 'border-red-500/40 ring-1 ring-red-500/20' : 'border-slate-700'}`}>
@@ -297,13 +297,13 @@ export default function Revenue() {
                   return (
                     <tr key={ticket.id} className={`border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors ${belowMin ? 'bg-red-500/5' : ''}`}>
                       <td className="px-4 py-3">
-                        <p className="font-mono text-xs text-brand-400">{ticket.ticketNo}</p>
+                        <p className="font-mono text-xs text-sky-400">{ticket.ticketNo}</p>
                         <p className="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5">
                           <Clock size={9} />
                           {formatDistanceToNow(new Date(ticket.createdAt), { addSuffix: true })}
                         </p>
-                        {ticket.source === 'webhook' && <span className="text-[9px] bg-brand-500/15 text-brand-400 px-1.5 py-0.5 rounded-full">webhook</span>}
-                        {ticket.source === 'simulated' && <span className="text-[9px] bg-purple-500/15 text-purple-400 px-1.5 py-0.5 rounded-full">simulated</span>}
+                        {ticket.source === 'webhook' && <span className="text-[9px] bg-sky-500/15 text-sky-400 px-1.5 py-0.5 rounded-full">webhook</span>}
+                        {ticket.source === 'simulated' && <span className="text-[9px] bg-slate-600 text-slate-300 px-1.5 py-0.5 rounded-full">simulated</span>}
                       </td>
                       <td className="px-4 py-3 font-medium text-white text-xs">{ticket.customer}</td>
                       <td className="px-4 py-3 text-slate-400 text-xs">{ticket.technician ?? '—'}</td>
@@ -363,8 +363,8 @@ export default function Revenue() {
           <Webhook size={15} className="text-slate-500 flex-shrink-0 mt-0.5" />
           <div className="min-w-0">
             <p className="text-xs font-medium text-slate-400">Inbound Webhook URL — configure this in your shop software</p>
-            <p className="text-xs font-mono text-brand-400 mt-1 truncate">{inboundWebhookUrl}</p>
-            <p className="text-[10px] text-slate-600 mt-1">POST a JSON ticket payload to this URL and it will appear here in real time. <button className="underline hover:text-brand-400 transition-colors" onClick={() => setSyncOpen(true)}>Connect a platform →</button></p>
+            <p className="text-xs font-mono text-sky-400 mt-1 truncate">{inboundWebhookUrl}</p>
+            <p className="text-[10px] text-slate-600 mt-1">POST a JSON ticket payload to this URL and it will appear here in real time. <button className="underline hover:text-sky-400 transition-colors" onClick={() => setSyncOpen(true)}>Connect a platform →</button></p>
           </div>
         </div>
       </Card>
@@ -424,9 +424,9 @@ export default function Revenue() {
                     <td className="px-3 py-3">
                       <div className="flex items-center gap-1 justify-end">
                         {editing ? (
-                          <><button onClick={() => saveDriver(d.id)} className="text-brand-400 hover:text-brand-300 p-1"><Save size={14} /></button><button onClick={() => setEditingDriverId(null)} className="text-slate-500 hover:text-slate-300 p-1"><X size={14} /></button></>
+                          <><button onClick={() => saveDriver(d.id)} className="text-sky-400 hover:text-sky-300 p-1"><Save size={14} /></button><button onClick={() => setEditingDriverId(null)} className="text-slate-500 hover:text-slate-300 p-1"><X size={14} /></button></>
                         ) : (
-                          <><button onClick={() => startDriverEdit(d)} className="text-slate-500 hover:text-brand-400 p-1"><Pencil size={13} /></button><button onClick={() => deleteDriver(d.id)} className="text-slate-600 hover:text-red-400 p-1"><X size={13} /></button></>
+                          <><button onClick={() => startDriverEdit(d)} className="text-slate-500 hover:text-sky-400 p-1"><Pencil size={13} /></button><button onClick={() => deleteDriver(d.id)} className="text-slate-600 hover:text-red-400 p-1"><X size={13} /></button></>
                         )}
                       </div>
                     </td>
@@ -454,19 +454,19 @@ export default function Revenue() {
         <div className="p-6 space-y-4">
           {saveSuccess ? (
             <div className="flex flex-col items-center gap-3 py-8">
-              <div className="w-14 h-14 bg-brand-500/20 rounded-full flex items-center justify-center">
-                <CheckCircle2 size={28} className="text-brand-400" />
+              <div className="w-14 h-14 bg-sky-500/20 rounded-full flex items-center justify-center">
+                <CheckCircle2 size={28} className="text-sky-400" />
               </div>
               <p className="text-white font-semibold">Platform connected!</p>
               <p className="text-sm text-slate-400 text-center">
-                <span className="text-brand-400 font-medium">{resolvedName}</span> is now saved. Tickets sent to the webhook URL will appear in the Live Tickets feed.
+                <span className="text-sky-400 font-medium">{resolvedName}</span> is now saved. Tickets sent to the webhook URL will appear in the Live Tickets feed.
               </p>
             </div>
           ) : (
             <>
               <div>
                 <label className="block text-xs font-medium text-slate-400 mb-1">Platform</label>
-                <select value={selectedPlatform} onChange={e => { setSelectedPlatform(e.target.value); setCustomPlatform('') }} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
+                <select value={selectedPlatform} onChange={e => { setSelectedPlatform(e.target.value); setCustomPlatform('') }} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
                   {STANDARD_PLATFORMS.map(p => <option key={p}>{p}</option>)}
                 </select>
               </div>
@@ -474,29 +474,29 @@ export default function Revenue() {
               {isOther && (
                 <div>
                   <label className="block text-xs font-medium text-slate-400 mb-1">Platform Name <span className="text-red-400">*</span></label>
-                  <input type="text" value={customPlatform} onChange={e => setCustomPlatform(e.target.value)} placeholder="e.g. Lightspeed, Vend, my custom POS…" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-400/40" />
+                  <input type="text" value={customPlatform} onChange={e => setCustomPlatform(e.target.value)} placeholder="e.g. Lightspeed, Vend, my custom POS…" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-400/40" />
                   <p className="text-[11px] text-slate-500 mt-1">This name will be saved and shown in your connected integrations list.</p>
                 </div>
               )}
 
               <div>
                 <label className="block text-xs font-medium text-slate-400 mb-1">API Key / Secret <span className="text-red-400">*</span></label>
-                <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="Paste your API key" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40" />
+                <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="Paste your API key" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40" />
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-slate-400 mb-1">Location / Account ID</label>
-                <input type="text" value={locationId} onChange={e => setLocationId(e.target.value)} placeholder="Your location or account ID" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40" />
+                <input type="text" value={locationId} onChange={e => setLocationId(e.target.value)} placeholder="Your location or account ID" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40" />
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-slate-400 mb-1">Outbound Webhook Secret (optional)</label>
-                <input type="text" value={webhookSecret} onChange={e => setWebhookSecret(e.target.value)} placeholder="Webhook signing secret for verification" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-400/40" />
+                <input type="text" value={webhookSecret} onChange={e => setWebhookSecret(e.target.value)} placeholder="Webhook signing secret for verification" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-400/40" />
               </div>
 
               <div className="bg-slate-700/40 rounded-xl p-3 space-y-1">
                 <p className="text-xs font-medium text-slate-400">Your inbound webhook URL:</p>
-                <p className="text-xs font-mono text-brand-400 break-all">{inboundWebhookUrl}</p>
+                <p className="text-xs font-mono text-sky-400 break-all">{inboundWebhookUrl}</p>
                 <p className="text-[10px] text-slate-500">Configure this URL in your shop software so new tickets POST here automatically.</p>
               </div>
 
@@ -505,7 +505,7 @@ export default function Revenue() {
                   <p className="text-xs font-medium text-slate-400 mb-2">Connected:</p>
                   <div className="flex flex-wrap gap-2">
                     {connectedPlatforms.filter(p=>p.type==='revenue').map(p => (
-                      <span key={p.id} className="flex items-center gap-1.5 bg-brand-500/15 border border-brand-500/30 rounded-full px-2.5 py-1 text-xs text-brand-400">
+                      <span key={p.id} className="flex items-center gap-1.5 bg-sky-500/15 border border-sky-500/30 rounded-full px-2.5 py-1 text-xs text-sky-400">
                         <CheckCircle2 size={10}/> {p.name}
                         <button onClick={() => removeConnectedPlatform(p.id)} className="hover:text-red-400 ml-1">✕</button>
                       </span>
@@ -532,19 +532,19 @@ export default function Revenue() {
             {[{label:'Customer',key:'customer'},{label:'Technician (optional)',key:'technician'}].map(({label,key})=>(
               <div key={key}>
                 <label className="block text-xs font-medium text-slate-400 mb-1">{label}</label>
-                <input type="text" value={tForm[key as keyof typeof tForm] as string} onChange={e=>setTForm(f=>({...f,[key]:e.target.value}))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40" />
+                <input type="text" value={tForm[key as keyof typeof tForm] as string} onChange={e=>setTForm(f=>({...f,[key]:e.target.value}))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40" />
               </div>
             ))}
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Service / Item Description</label>
-            <input type="text" value={tForm.desc} onChange={e=>setTForm(f=>({...f,desc:e.target.value}))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40" />
+            <input type="text" value={tForm.desc} onChange={e=>setTForm(f=>({...f,desc:e.target.value}))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40" />
           </div>
           <div className="grid grid-cols-3 gap-4">
             {[{label:'Qty',key:'qty'},{label:'Unit Cost ($)',key:'unitCost'},{label:'Unit Price ($)',key:'unitPrice'}].map(({label,key})=>(
               <div key={key}>
                 <label className="block text-xs font-medium text-slate-400 mb-1">{label}</label>
-                <input type="number" value={tForm[key as keyof typeof tForm] as string} onChange={e=>setTForm(f=>({...f,[key]:e.target.value}))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40" />
+                <input type="number" value={tForm[key as keyof typeof tForm] as string} onChange={e=>setTForm(f=>({...f,[key]:e.target.value}))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40" />
               </div>
             ))}
           </div>
@@ -558,7 +558,7 @@ export default function Revenue() {
           )}
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Status</label>
-            <select value={tForm.status} onChange={e=>setTForm(f=>({...f,status:e.target.value as LiveTicket['status']}))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
+            <select value={tForm.status} onChange={e=>setTForm(f=>({...f,status:e.target.value as LiveTicket['status']}))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
               {(['open','in_progress','pending_approval'] as const).map(s=><option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
             </select>
           </div>
@@ -575,7 +575,7 @@ export default function Revenue() {
           {[{label:'Product / Service Name',key:'name'},{label:'Revenue ($)',key:'revenue'},{label:'Cost ($)',key:'cost'},{label:'Change vs Last Month (%)',key:'change'}].map(({label,key})=>(
             <div key={key}>
               <label className="block text-xs font-medium text-slate-400 mb-1">{label}</label>
-              <input type={key==='name'?'text':'number'} value={addDriverForm[key as keyof typeof addDriverForm]} onChange={e=>setAddDriverForm(f=>({...f,[key]:e.target.value}))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40" />
+              <input type={key==='name'?'text':'number'} value={addDriverForm[key as keyof typeof addDriverForm]} onChange={e=>setAddDriverForm(f=>({...f,[key]:e.target.value}))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40" />
             </div>
           ))}
           <div className="flex gap-3 pt-1">

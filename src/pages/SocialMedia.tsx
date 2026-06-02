@@ -215,7 +215,7 @@ export default function SocialMedia() {
               key={p.id}
               hover
               onClick={() => handlePlatformClick(p.id)}
-              className={`border-2 ${activePlatform === p.id ? 'border-brand-500 ring-2 ring-brand-100' : 'border-transparent'}`}
+              className={`border-2 ${activePlatform === p.id ? 'border-brand-500 ring-2 ring-sky-100' : 'border-transparent'}`}
             >
               <CardBody className="flex flex-col items-center gap-3 py-6 relative">
                 {/* Disconnect button (top-right, only when connected) */}
@@ -246,9 +246,9 @@ export default function SocialMedia() {
 
       {/* No connections prompt */}
       {connectedPlatforms.length === 0 && (
-        <div className="bg-brand-500/10 border border-brand-500/20 rounded-xl p-5 text-center">
-          <p className="text-sm font-medium text-brand-400">No accounts connected yet</p>
-          <p className="text-xs text-brand-400 mt-1">Click any platform card above to connect your account and start posting.</p>
+        <div className="bg-sky-500/10 border border-sky-500/20 rounded-xl p-5 text-center">
+          <p className="text-sm font-medium text-sky-400">No accounts connected yet</p>
+          <p className="text-xs text-sky-400 mt-1">Click any platform card above to connect your account and start posting.</p>
         </div>
       )}
 
@@ -277,7 +277,7 @@ export default function SocialMedia() {
                       onClick={() => togglePlatformSelect(p.id)}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                         selectedPlatforms.includes(p.id)
-                          ? 'bg-brand-500 text-white border-brand-500'
+                          ? 'bg-sky-500 text-white border-brand-500'
                           : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-brand-300'
                       }`}
                     >
@@ -292,7 +292,7 @@ export default function SocialMedia() {
               value={postContent}
               onChange={e => setPostContent(e.target.value)}
               rows={10}
-              className="w-full border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500 resize-none font-mono leading-relaxed"
+              className="w-full border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500 resize-none font-mono leading-relaxed"
               placeholder="Your post content..."
             />
 
@@ -306,7 +306,7 @@ export default function SocialMedia() {
               ) : (
                 <button
                   onClick={() => fileRef.current?.click()}
-                  className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-slate-700 rounded-xl text-sm text-slate-500 hover:border-brand-300 hover:text-brand-400 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-slate-700 rounded-xl text-sm text-slate-500 hover:border-brand-300 hover:text-sky-400 transition-colors"
                 >
                   <Image size={16} /> Add photo / video
                 </button>
@@ -352,7 +352,7 @@ export default function SocialMedia() {
                   <span className="flex items-center gap-1"><ThumbsUp size={12} />{post.likes}</span>
                   <span className="flex items-center gap-1"><MessageCircle size={12} />{post.comments}</span>
                   <span className="flex items-center gap-1"><Share size={12} />{post.shares}</span>
-                  <span className="flex items-center gap-1 text-brand-400 font-medium"><Link2 size={12} />{post.reach?.toLocaleString()}</span>
+                  <span className="flex items-center gap-1 text-sky-400 font-medium"><Link2 size={12} />{post.reach?.toLocaleString()}</span>
                 </div>
               )}
             </div>
@@ -389,7 +389,7 @@ export default function SocialMedia() {
                 value={formToken}
                 onChange={e => { setFormToken(e.target.value); setFormError('') }}
                 placeholder={modalConfig.tokenPlaceholder}
-                className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500"
+                className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500"
               />
             </div>
 
@@ -400,7 +400,7 @@ export default function SocialMedia() {
                 value={formAccountId}
                 onChange={e => { setFormAccountId(e.target.value); setFormError('') }}
                 placeholder={modalConfig.accountPlaceholder}
-                className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500"
+                className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500"
               />
             </div>
 

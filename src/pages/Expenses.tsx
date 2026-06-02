@@ -212,12 +212,12 @@ export default function Expenses() {
                         <div className="flex items-center gap-1 justify-end">
                           {editing ? (
                             <>
-                              <button onClick={() => saveEdit(e.id)} className="text-brand-400 hover:text-brand-300 p-1" title="Save"><Save size={14} /></button>
+                              <button onClick={() => saveEdit(e.id)} className="text-sky-400 hover:text-sky-300 p-1" title="Save"><Save size={14} /></button>
                               <button onClick={() => setEditingId(null)} className="text-slate-500 hover:text-slate-300 p-1" title="Cancel"><X size={14} /></button>
                             </>
                           ) : (
                             <>
-                              <button onClick={() => startEdit(e)} className="text-slate-500 hover:text-brand-400 p-1" title="Edit"><Pencil size={13} /></button>
+                              <button onClick={() => startEdit(e)} className="text-slate-500 hover:text-sky-400 p-1" title="Edit"><Pencil size={13} /></button>
                               <button onClick={() => deleteExpense(e.id)} className="text-slate-600 hover:text-red-400 p-1" title="Delete"><X size={13} /></button>
                             </>
                           )}
@@ -258,12 +258,12 @@ export default function Expenses() {
             ].map(({ label, key, type = 'text' }) => (
               <div key={key}>
                 <label className="block text-xs font-medium text-slate-400 mb-1">{label}</label>
-                <input type={type} value={addForm[key as keyof EditForm]} onChange={e => setAddForm(f => ({ ...f, [key]: e.target.value }))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40" />
+                <input type={type} value={addForm[key as keyof EditForm]} onChange={e => setAddForm(f => ({ ...f, [key]: e.target.value }))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40" />
               </div>
             ))}
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1">Category</label>
-              <select value={addForm.category} onChange={e => { setAddForm(f => ({ ...f, category: e.target.value })); setAddCustomCategory('') }} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
+              <select value={addForm.category} onChange={e => { setAddForm(f => ({ ...f, category: e.target.value })); setAddCustomCategory('') }} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
                 {CATEGORIES.map(c => <option key={c}>{c}</option>)}
               </select>
               {addForm.category === 'Other' && (
@@ -276,21 +276,21 @@ export default function Expenses() {
                     value={addCustomCategory}
                     onChange={e => setAddCustomCategory(e.target.value)}
                     placeholder="e.g. Vehicle Repair, Licensing Fee, Donation…"
-                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500"
+                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500"
                   />
                 </div>
               )}
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1">Status</label>
-              <select value={addForm.status} onChange={e => setAddForm(f => ({ ...f, status: e.target.value }))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
+              <select value={addForm.status} onChange={e => setAddForm(f => ({ ...f, status: e.target.value }))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
                 {['pending','paid','overdue'].map(s => <option key={s}>{s}</option>)}
               </select>
             </div>
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Estimated Margin Impact % (e.g. -3.5)</label>
-            <input type="number" step="0.1" value={addForm.estimatedMarginImpact} onChange={e => setAddForm(f => ({ ...f, estimatedMarginImpact: e.target.value }))} placeholder="-2.5" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40" />
+            <input type="number" step="0.1" value={addForm.estimatedMarginImpact} onChange={e => setAddForm(f => ({ ...f, estimatedMarginImpact: e.target.value }))} placeholder="-2.5" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40" />
           </div>
           <div className="flex gap-3 pt-2">
             <Button className="flex-1" onClick={handleAdd}>Save Expense</Button>
@@ -304,17 +304,17 @@ export default function Expenses() {
         <div className="p-6 space-y-4">
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Platform</label>
-            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
+            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
               {['QuickBooks','FreshBooks','Xero','Wave','Sage','Zoho Books','Other'].map(p => <option key={p}>{p}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">API Key / Access Token</label>
-            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your token" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40" />
+            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your token" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40" />
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Company / Realm ID</label>
-            <input type="text" value={syncForm.companyId} onChange={e => setSyncForm(f => ({ ...f, companyId: e.target.value }))} placeholder="Your company identifier" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40" />
+            <input type="text" value={syncForm.companyId} onChange={e => setSyncForm(f => ({ ...f, companyId: e.target.value }))} placeholder="Your company identifier" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40" />
           </div>
           <div className="flex gap-3 pt-2">
             <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>

@@ -43,8 +43,8 @@ export default function ChatBot() {
         {chatMessages.map(msg => (
           <div key={msg.id} className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             {msg.role === 'assistant' && (
-              <div className="w-7 h-7 bg-brand-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Bot size={14} className="text-brand-400" />
+              <div className="w-7 h-7 bg-sky-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Bot size={14} className="text-sky-400" />
               </div>
             )}
             <div className="max-w-[75%]">
@@ -70,7 +70,7 @@ export default function ChatBot() {
           <button
             key={p}
             onClick={() => sendChatMessage(p)}
-            className="text-xs bg-slate-700 hover:bg-brand-500/20 hover:text-brand-400 text-slate-400 px-3 py-1 rounded-full whitespace-nowrap transition-colors flex-shrink-0"
+            className="text-xs bg-slate-700 hover:bg-sky-500/20 hover:text-sky-400 text-slate-400 px-3 py-1 rounded-full whitespace-nowrap transition-colors flex-shrink-0"
           >
             {p}
           </button>
@@ -91,7 +91,7 @@ export default function ChatBot() {
           <button
             onClick={handleSend}
             disabled={!input.trim()}
-            className="w-7 h-7 bg-brand-500 hover:bg-brand-600 disabled:opacity-40 rounded-lg flex items-center justify-center transition-colors"
+            className="w-7 h-7 bg-sky-500 hover:bg-sky-600 disabled:opacity-40 rounded-lg flex items-center justify-center transition-colors"
           >
             <Send size={13} className="text-white" />
           </button>

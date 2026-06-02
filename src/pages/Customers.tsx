@@ -101,7 +101,7 @@ export default function Customers() {
                   <td className="px-5 py-3"><Badge variant={STATUS_VARIANT[c.status]}>{c.status}</Badge></td>
                   <td className="px-5 py-3">
                     <div className="flex gap-1 flex-wrap">
-                      {c.tags.map(t => <Badge key={t} variant={t === 'at-risk' ? 'warning' : t === 'priority' ? 'purple' : 'default'}>{t}</Badge>)}
+                      {c.tags.map(t => <Badge key={t} variant={t === 'at-risk' ? 'warning' : t === 'priority' ? 'info' : 'default'}>{t}</Badge>)}
                     </div>
                   </td>
                 </tr>
@@ -157,12 +157,12 @@ export default function Customers() {
           {[{ label: 'Full Name / Business', key: 'name' }, { label: 'Email', key: 'email' }, { label: 'Phone', key: 'phone' }].map(({ label, key }) => (
             <div key={key}>
               <label className="block text-xs font-medium text-slate-400 mb-1">{label}</label>
-              <input type="text" value={form[key as keyof typeof form]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+              <input type="text" value={form[key as keyof typeof form]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
             </div>
           ))}
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Notes</label>
-            <textarea rows={3} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 resize-none" />
+            <textarea rows={3} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 resize-none" />
           </div>
           <div className="flex gap-3">
             <Button className="flex-1" onClick={() => setAddOpen(false)}>Add Customer</Button>
@@ -176,17 +176,17 @@ export default function Customers() {
         <div className="p-6 space-y-4">
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Platform</label>
-            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
+            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
               {['HubSpot','Salesforce','Mindbody','Acuity Scheduling','Jobber','ServiceTitan','Zoho CRM','Other'].map(p => <option key={p}>{p}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">API Key / Access Token</label>
-            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Portal / Account ID</label>
-            <input type="text" value={syncForm.portalId} onChange={e => setSyncForm(f => ({ ...f, portalId: e.target.value }))} placeholder="Your portal or account ID" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+            <input type="text" value={syncForm.portalId} onChange={e => setSyncForm(f => ({ ...f, portalId: e.target.value }))} placeholder="Your portal or account ID" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
           </div>
           <div className="flex gap-3 pt-2">
             <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>

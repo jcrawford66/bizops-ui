@@ -166,7 +166,7 @@ export default function Inventory() {
               placeholder="Search by name or SKU..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500 w-56"
+              className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500 w-56"
             />
           </div>
         </CardHeader>
@@ -270,12 +270,12 @@ export default function Inventory() {
                       <div className="flex items-center gap-1">
                         {editing ? (
                           <>
-                            <button onClick={() => saveEdit(item.id)} className="text-brand-400 hover:text-brand-300 p-1 transition-colors" title="Save"><Save size={14} /></button>
+                            <button onClick={() => saveEdit(item.id)} className="text-sky-400 hover:text-sky-300 p-1 transition-colors" title="Save"><Save size={14} /></button>
                             <button onClick={() => setEditingId(null)} className="text-slate-500 hover:text-slate-300 p-1 transition-colors" title="Cancel"><X size={14} /></button>
                           </>
                         ) : (
                           <>
-                            <button onClick={() => startEdit(item)} className="text-slate-500 hover:text-brand-400 p-1 transition-colors" title="Edit"><Pencil size={13} /></button>
+                            <button onClick={() => startEdit(item)} className="text-slate-500 hover:text-sky-400 p-1 transition-colors" title="Edit"><Pencil size={13} /></button>
                             <button onClick={() => handleDelete(item.id)} className="text-slate-600 hover:text-red-400 p-1 transition-colors" title="Delete"><X size={13} /></button>
                           </>
                         )}
@@ -308,7 +308,7 @@ export default function Inventory() {
                   type={type}
                   value={form[key]}
                   onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500"
+                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500"
                 />
               </div>
             ))}
@@ -319,7 +319,7 @@ export default function Inventory() {
               <select
                 value={form.category}
                 onChange={e => setForm(f => ({ ...f, category: e.target.value, customCategory: '' }))}
-                className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40"
+                className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
               >
                 {PRESET_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
@@ -337,7 +337,7 @@ export default function Inventory() {
                 value={form.customCategory}
                 onChange={e => setForm(f => ({ ...f, customCategory: e.target.value }))}
                 placeholder="e.g. Lubricants, Adhesives, Retail Merchandise…"
-                className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500"
+                className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500"
               />
               <p className="text-[11px] text-slate-500 mt-1">This will be saved as a new category and appear in future dropdowns.</p>
             </div>
@@ -355,17 +355,17 @@ export default function Inventory() {
         <div className="p-6 space-y-4">
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Platform</label>
-            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
+            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
               {['Square','Shopify','Lightspeed','Clover','Toast','Vend','QuickBooks','Other'].map(p => <option key={p}>{p}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">API Key / Access Token</label>
-            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Location / Store ID</label>
-            <input type="text" value={syncForm.locationId} onChange={e => setSyncForm(f => ({ ...f, locationId: e.target.value }))} placeholder="Your location or store ID" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+            <input type="text" value={syncForm.locationId} onChange={e => setSyncForm(f => ({ ...f, locationId: e.target.value }))} placeholder="Your location or store ID" className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
           </div>
           <div className="flex gap-3 pt-2">
             <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>

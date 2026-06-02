@@ -42,7 +42,7 @@ export default function Settings() {
   const [tab, setTab] = useState<Tab>('business')
   const [biz, setBiz] = useState({ name: 'My Business', industry: 'General Services', email: 'owner@mybiz.com', phone: '(555) 000-1234', address: '123 Main St', city: 'Austin', state: 'TX', zip: '78701' })
   const [notifs, setNotifs] = useState({ email: true, sms: false, push: true, marginAlerts: true, lowStock: true, newCustomer: true, invoiceOverdue: true, revenueGoal: true })
-  const [appearance, setAppearance] = useState({ accentColor: '#6366f1', compactMode: false })
+  const [appearance, setAppearance] = useState({ accentColor: '#0ea5e9', compactMode: false })
 
   return (
     <div className="space-y-6">
@@ -55,7 +55,7 @@ export default function Settings() {
                 <button
                   key={id}
                   onClick={() => setTab(id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${tab === id ? 'bg-brand-500/15 text-brand-400 font-medium' : 'text-slate-400 hover:bg-slate-700/40 hover:text-white'}`}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${tab === id ? 'bg-sky-500/15 text-sky-400 font-medium' : 'text-slate-400 hover:bg-slate-700/40 hover:text-white'}`}
                 >
                   <Icon size={16} /> {label}
                 </button>
@@ -83,14 +83,14 @@ export default function Settings() {
                         type="text"
                         value={biz[key as keyof typeof biz]}
                         onChange={e => setBiz(b => ({ ...b, [key]: e.target.value }))}
-                        className="w-full border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500"
+                        className="w-full border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500"
                       />
                     </div>
                   ))}
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-400 mb-1">Revenue Goal (Monthly)</label>
-                  <input type="number" placeholder="150000" className="w-full border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+                  <input type="number" placeholder="150000" className="w-full border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
                 </div>
                 <Button icon={<Save size={14} />}>Save Changes</Button>
               </CardBody>
@@ -129,7 +129,7 @@ export default function Settings() {
                   {['Current Password', 'New Password', 'Confirm New Password'].map(l => (
                     <div key={l}>
                       <label className="block text-xs font-medium text-slate-400 mb-1">{l}</label>
-                      <input type="password" className="w-full border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+                      <input type="password" className="w-full border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
                     </div>
                   ))}
                   <Button icon={<Save size={14} />}>Update Password</Button>
@@ -154,7 +154,7 @@ export default function Settings() {
                 <div>
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Accent Color</p>
                   <div className="flex gap-3">
-                    {['#6366f1','#22c55e','#f59e0b','#ec4899','#0ea5e9','#f43f5e'].map(c => (
+                    {['#0ea5e9','#22c55e','#f59e0b','#ec4899','#0ea5e9','#f43f5e'].map(c => (
                       <button
                         key={c}
                         onClick={() => setAppearance(a => ({ ...a, accentColor: c }))}
@@ -195,7 +195,7 @@ export default function Settings() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <select defaultValue={m.role} className="border border-slate-600 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-brand-400/40">
+                      <select defaultValue={m.role} className="border border-slate-600 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-sky-400/40">
                         <option>Owner</option><option>Manager</option><option>Staff</option><option>Read Only</option>
                       </select>
                       {m.role !== 'Owner' && <Button variant="ghost" size="sm">Remove</Button>}

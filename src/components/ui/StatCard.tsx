@@ -12,7 +12,7 @@ type Props = {
   alert?: boolean
 }
 
-export default function StatCard({ title, value, change, changeLabel, icon: Icon, iconColor = 'text-brand-400', iconBg = 'bg-brand-500/10', alert }: Props) {
+export default function StatCard({ title, value, change, changeLabel, icon: Icon, iconColor = 'text-sky-400', iconBg = 'bg-sky-500/10', alert }: Props) {
   const positive = change !== undefined && change >= 0
 
   return (

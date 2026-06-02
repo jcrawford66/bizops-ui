@@ -24,7 +24,7 @@ const integrations: Integration[] = [
   { id: '5', name: 'Salesforce', category: 'CRM', description: 'Enterprise CRM and customer data', connected: false, color: 'bg-blue-500/15 text-blue-400', initials: 'SF' },
   { id: '6', name: 'Jobber', category: 'Field Service', description: 'Job scheduling, quotes, and work orders', connected: true, lastSync: '2025-06-10 9:00 AM', color: 'bg-yellow-500/15 text-yellow-400', initials: 'JB' },
   { id: '7', name: 'ServiceTitan', category: 'Field Service', description: 'Service management and dispatch', connected: false, color: 'bg-red-500/15 text-red-400', initials: 'ST' },
-  { id: '8', name: 'Lightspeed', category: 'POS / Retail', description: 'Retail POS and inventory management', connected: false, color: 'bg-indigo-500/15 text-indigo-400', initials: 'LS' },
+  { id: '8', name: 'Lightspeed', category: 'POS / Retail', description: 'Retail POS and inventory management', connected: false, color: 'bg-sky-500/15 text-sky-400', initials: 'LS' },
   { id: '9', name: 'Mindbody', category: 'Booking', description: 'Appointment booking and client management', connected: false, color: 'bg-teal-500/15 text-teal-400', initials: 'MB' },
   { id: '10', name: 'Acuity Scheduling', category: 'Booking', description: 'Online scheduling and appointments', connected: false, color: 'bg-pink-500/15 text-pink-400', initials: 'AC' },
   { id: '11', name: 'Gusto', category: 'HR / Payroll', description: 'Payroll, benefits, and employee data', connected: false, color: 'bg-lime-500/15 text-lime-400', initials: 'GU' },
@@ -82,7 +82,7 @@ export default function Integrations() {
             key={cat}
             onClick={() => setActiveCategory(cat)}
             className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-              activeCategory === cat ? 'bg-brand-500 text-white border-brand-500' : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-brand-300'
+              activeCategory === cat ? 'bg-sky-500 text-white border-brand-500' : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-brand-300'
             }`}
           >
             {cat}
@@ -125,15 +125,15 @@ export default function Integrations() {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1">API Key</label>
-              <input type="password" value={form.apiKey} onChange={e => setForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+              <input type="password" value={form.apiKey} onChange={e => setForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1">Webhook URL (optional)</label>
-              <input type="text" value={form.webhookUrl} onChange={e => setForm(f => ({ ...f, webhookUrl: e.target.value }))} placeholder="https://your-app.com/webhook" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+              <input type="text" value={form.webhookUrl} onChange={e => setForm(f => ({ ...f, webhookUrl: e.target.value }))} placeholder="https://your-app.com/webhook" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1">Account / Org ID</label>
-              <input type="text" value={form.accountId} onChange={e => setForm(f => ({ ...f, accountId: e.target.value }))} placeholder="Your account identifier" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+              <input type="text" value={form.accountId} onChange={e => setForm(f => ({ ...f, accountId: e.target.value }))} placeholder="Your account identifier" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
             </div>
             <p className="text-xs text-slate-400">Your credentials are encrypted at rest and never exposed to the client.</p>
             <div className="flex gap-3">
@@ -150,7 +150,7 @@ export default function Integrations() {
           <p className="text-sm text-slate-400">Don't see your software? Add a custom integration using webhooks or REST APIs.</p>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Integration Name</label>
-            <input type="text" placeholder="e.g. My Custom CRM" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+            <input type="text" placeholder="e.g. My Custom CRM" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Inbound Webhook URL</label>
@@ -159,11 +159,11 @@ export default function Integrations() {
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Outbound Endpoint (optional)</label>
-            <input type="text" placeholder="https://yourapp.com/api/data" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+            <input type="text" placeholder="https://yourapp.com/api/data" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Auth Header (optional)</label>
-            <input type="password" placeholder="Bearer token or API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+            <input type="password" placeholder="Bearer token or API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
           </div>
           <div className="flex gap-3">
             <Button className="flex-1" onClick={() => setCustomOpen(false)}>Save Integration</Button>

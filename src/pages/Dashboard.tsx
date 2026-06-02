@@ -71,7 +71,7 @@ export default function Dashboard() {
                 <h3 className="font-semibold text-white text-sm">Revenue vs Expenses</h3>
                 <p className="text-xs text-slate-500 mt-0.5">Last 6 months</p>
               </div>
-              <Link to="/revenue" className="text-xs text-brand-400 hover:underline flex items-center gap-1">
+              <Link to="/revenue" className="text-xs text-sky-400 hover:underline flex items-center gap-1">
                 View full report <ArrowRight size={12} />
               </Link>
             </div>
@@ -81,8 +81,8 @@ export default function Dashboard() {
               <AreaChart data={revenueData}>
                 <defs>
                   <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.15} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.15} />
@@ -93,7 +93,7 @@ export default function Dashboard() {
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                 <Tooltip formatter={(v: unknown) => [`$${(v as number).toLocaleString()}`, '']} contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }} />
-                <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={2} fill="url(#revGrad)" name="Revenue" />
+                <Area type="monotone" dataKey="revenue" stroke="#0ea5e9" strokeWidth={2} fill="url(#revGrad)" name="Revenue" />
                 <Area type="monotone" dataKey="expenses" stroke="#f59e0b" strokeWidth={2} fill="url(#expGrad)" name="Expenses" />
               </AreaChart>
             </ResponsiveContainer>
@@ -105,7 +105,7 @@ export default function Dashboard() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-white text-sm">Team Efficiency</h3>
-              <Link to="/employees" className="text-xs text-brand-400 hover:underline flex items-center gap-1">
+              <Link to="/employees" className="text-xs text-sky-400 hover:underline flex items-center gap-1">
                 View all <ArrowRight size={12} />
               </Link>
             </div>
@@ -117,7 +117,7 @@ export default function Dashboard() {
                 <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} width={55} />
                 <Tooltip formatter={(v: unknown) => [`${v as number}%`, 'Efficiency']} contentStyle={{ borderRadius: '8px', border: '1px solid #1e3a4a', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }} />
-                <Bar dataKey="efficiency" fill="#6366f1" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="efficiency" fill="#0ea5e9" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardBody>

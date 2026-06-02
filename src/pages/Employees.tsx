@@ -117,7 +117,7 @@ export default function Employees() {
         <StatCard title="Avg Efficiency" value={`${avgEfficiency}%`} change={2.1} icon={CheckCircle} iconColor="text-teal-600" iconBg="bg-teal-400/15" />
         <StatCard title="Team Members" value={`${employees.length}`} icon={Users2} />
         <StatCard title="Total Hours (MTD)" value={totalHours.toString()} icon={Clock} iconColor="text-blue-500" iconBg="bg-blue-500/15" />
-        <StatCard title="Revenue Attributed" value={`$${totalRevenue.toLocaleString()}`} icon={DollarSign} iconColor="text-purple-500" iconBg="bg-purple-500/15" />
+        <StatCard title="Revenue Attributed" value={`$${totalRevenue.toLocaleString()}`} icon={DollarSign} iconColor="text-sky-400" iconBg="bg-sky-500/15" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -277,7 +277,7 @@ export default function Employees() {
                 type="text"
                 value={addForm[key as keyof EditForm]}
                 onChange={e => setAddForm(f => ({ ...f, [key]: e.target.value }))}
-                className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500"
+                className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500"
               />
             </div>
           ))}
@@ -293,17 +293,17 @@ export default function Employees() {
         <div className="p-6 space-y-4">
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">Platform</label>
-            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40">
+            <select value={syncForm.platform} onChange={e => setSyncForm(f => ({ ...f, platform: e.target.value }))} className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
               {['Gusto','BambooHR','ADP','Rippling','When I Work','Deputy','Homebase','Other'].map(p => <option key={p}>{p}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">API Key</label>
-            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+            <input type="password" value={syncForm.apiKey} onChange={e => setSyncForm(f => ({ ...f, apiKey: e.target.value }))} placeholder="Paste your API key" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">API Endpoint (if applicable)</label>
-            <input type="text" value={syncForm.endpoint} onChange={e => setSyncForm(f => ({ ...f, endpoint: e.target.value }))} placeholder="https://api.yourplatform.com" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-500" />
+            <input type="text" value={syncForm.endpoint} onChange={e => setSyncForm(f => ({ ...f, endpoint: e.target.value }))} placeholder="https://api.yourplatform.com" className="w-full border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-500" />
           </div>
           <div className="flex gap-3 pt-2">
             <Button className="flex-1" onClick={() => setSyncOpen(false)}>Connect & Sync</Button>
